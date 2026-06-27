@@ -56,22 +56,24 @@
             <button onclick="startNewChat()" class="w-full py-2.5 mb-3 bg-white/10 hover:bg-white/15 text-white text-sm font-medium rounded-xl border border-white/10 transition-all flex items-center justify-center gap-2"><span>+</span> New Chat</button>
             
             <div class="text-white/40 text-[10px] font-bold tracking-wider uppercase mb-1 px-2">Recent Chats</div>
-            <div id="history-list" class="flex-1 overflow-y-auto space-y-2 pr-1 max-h-[120px] mb-3">
+            <div id="history-list" class="flex-1 overflow-y-auto space-y-2 pr-1 max-h-[100px] mb-2">
                 <div class="w-full px-3 py-2 text-left text-xs text-white/70 bg-white/5 border border-white/5 rounded-xl cursor-pointer">💬 Connected Mainframe</div>
             </div>
 
-            <!-- DYNAMIC GLOBAL LEADERBOARD CARD -->
-            <div class="border-t border-white/10 pt-3 mb-2 flex-1 flex flex-col min-h-[160px]">
-                <div class="text-yellow-400 text-[10px] font-bold tracking-wider uppercase mb-2 px-2 flex justify-between">
+            <!-- LEADERBOARD CARD -->
+            <div class="border-t border-white/10 pt-2 mb-2 flex-1 flex flex-col min-h-[140px]">
+                <div class="text-yellow-400 text-[10px] font-bold tracking-wider uppercase mb-1 px-2 flex justify-between">
                     <span>🏆 Global Leaders</span>
                     <span onclick="fetchLeaderboard()" class="cursor-pointer hover:text-white transition-colors">🔄</span>
                 </div>
-                <div id="leaderboard-container" class="space-y-1.5 flex-1 overflow-y-auto text-[11px] font-mono px-1">
-                    <!-- Loaded dynamically via database -->
-                </div>
+                <div id="leaderboard-container" class="space-y-1 flex-1 overflow-y-auto text-[11px] font-mono px-1"></div>
             </div>
 
-            <button id="devil-gamble-btn" onclick="startDevilGame()" class="w-full py-2 bg-red-950/40 hover:bg-red-900/40 border border-red-900/30 text-red-400 text-xs font-mono rounded-xl transition-all flex items-center justify-center gap-2 tracking-wider">👹 Deal with Devil</button>
+            <!-- GAMBLE BUTTONS -->
+            <div class="space-y-1.5 pt-2 border-t border-white/10">
+                <button id="devil-gamble-btn" onclick="startDevilGame()" class="w-full py-2 bg-red-950/40 hover:bg-red-900/40 border border-red-900/30 text-red-400 text-xs font-mono rounded-xl transition-all flex items-center justify-center gap-2 tracking-wider">👹 Wager Game</button>
+                <button id="devil-ttt-btn" onclick="startTicTacToeGame()" class="w-full py-2 bg-red-950/40 hover:bg-red-900/40 border border-red-900/30 text-red-400 text-xs font-mono rounded-xl transition-all flex items-center justify-center gap-2 tracking-wider">❌ Devil's Cross&Zero</button>
+            </div>
             <button onclick="toggleMusic()" id="music-btn" class="w-full mt-2 py-2 bg-purple-600/20 hover:bg-purple-600/30 border border-purple-500/30 text-purple-300 text-xs font-medium rounded-xl transition-all flex items-center justify-center gap-2">🎵 Pause Music</button>
         </div>
 
@@ -99,34 +101,54 @@
         <div class="bg-slate-900/90 border border-white/10 p-8 rounded-3xl max-w-sm w-full text-center shadow-2xl flex flex-col items-center">
             <div class="w-12 h-12 rounded-full bg-purple-500/20 text-purple-400 flex items-center justify-center text-xl font-bold mb-4">🔮</div>
             <h2 class="text-white text-xl font-bold mb-2 tracking-wide">AAKASH VANI</h2>
-            <p class="text-white/60 text-sm mb-6">Free trial expired! Upgrade to premium for an uninterrupted experience with <strong>Aadhunik Manushya</strong>.</p>
+            <p class="text-white/60 text-sm mb-6">Free trial expired! Upgrade to premium or play a game with the devil.</p>
             <div class="w-48 h-48 bg-white p-2 rounded-2xl shadow-inner mb-6 flex items-center justify-center border-4 border-purple-500">
                 <img src="/static/qr.png" alt="UPI QR" class="w-full h-full object-contain rounded-xl">
             </div>
-            <p class="text-purple-400 font-mono text-xs animate-pulse tracking-wider mb-4">⚡ AUTOMATIC ACTIVATION ONCE PAID ⚡</p>
-            <button onclick="startDevilGame()" class="w-full py-2 mb-2 bg-red-950/40 hover:bg-red-900/60 border border-red-800/50 text-red-400 text-xs font-semibold rounded-xl transition-all tracking-wide">Don't bother me again</button>
+            <button onclick="startDevilGame()" class="w-full py-2 mb-1.5 bg-red-950/40 hover:bg-red-900/60 border border-red-800/50 text-red-400 text-xs font-semibold rounded-xl transition-all tracking-wide">Wager Game</button>
+            <button onclick="startTicTacToeGame()" class="w-full py-2 mb-2 bg-red-950/40 hover:bg-red-900/60 border border-red-800/50 text-red-400 text-xs font-semibold rounded-xl transition-all tracking-wide">Cross & Zero</button>
             <button onclick="bypassPrankLimit()" class="w-full py-1.5 text-white/20 hover:text-white/50 text-[10px] font-mono transition-all tracking-widest uppercase">sybau</button>
         </div>
     </div>
 
-    <!-- MINI DEVIL GAME OVERLAY INTERFACE -->
+    <!-- GAME 1: MINI DEVIL GUESS GAME OVERLAY -->
     <div id="game-modal" class="hidden absolute inset-0 bg-black/95 backdrop-blur-lg flex items-center justify-center p-4 z-50">
         <div class="bg-red-950/20 border border-red-900/50 p-8 rounded-3xl max-w-sm w-full text-center shadow-2xl flex flex-col items-center">
             <div class="text-3xl mb-2 animate-bounce">👹</div>
             <h2 class="text-red-500 text-xl font-mono font-bold tracking-widest uppercase mb-2">DEVIL'S WAGER</h2>
-            <p id="game-instruction" class="text-white/70 text-xs font-mono mb-6">I am thinking of a number from <strong class="text-red-400">1 to 10</strong>. Guess correctly to break the loop.</p>
-            
+            <p class="text-white/70 text-xs font-mono mb-4">Guess the number from <strong class="text-red-400">1 to 10</strong>.</p>
             <div class="w-full flex justify-between px-2 text-xs font-mono mb-4">
-                <span class="text-green-400">🔥 Win Streak: <span id="ui-win-streak">0x</span></span>
-                <span class="text-red-400">💀 Loss Streak: <span id="ui-loss-streak">0x</span></span>
+                <span class="text-green-400">🔥 Win: <span id="ui-win-streak">0x</span></span>
+                <span class="text-red-400">💀 Loss: <span id="ui-loss-streak">0x</span></span>
             </div>
-            <div class="text-red-400 text-sm font-mono mb-4">🖤 Lives Left: <span id="game-lives" class="font-bold text-red-500">3</span></div>
-            
+            <div class="text-red-400 text-sm font-mono mb-4">🖤 Lives: <span id="game-lives" class="font-bold text-red-500">3</span></div>
             <div class="w-full flex gap-2 mb-4">
-                <input id="game-guess" type="number" min="1" max="10" placeholder="1-10" class="w-full px-4 py-2.5 bg-black/40 border border-red-900/50 rounded-xl text-red-400 text-center font-mono outline-none focus:border-red-600 transition-colors">
-                <button onclick="submitDevilGuess()" class="px-5 bg-red-700 hover:bg-red-600 text-white font-mono text-sm font-bold rounded-xl transition-all">GUESS</button>
+                <input id="game-guess" type="number" min="1" max="10" placeholder="1-10" class="w-full px-4 py-2.5 bg-black/40 border border-red-900/50 rounded-xl text-red-400 text-center font-mono outline-none">
+                <button onclick="submitDevilGuess()" class="px-5 bg-red-700 hover:bg-red-600 text-white font-mono text-sm font-bold rounded-xl">GUESS</button>
             </div>
             <p id="game-feedback" class="text-red-400/60 font-mono text-xs min-h-[16px] animate-pulse"></p>
+        </div>
+    </div>
+
+    <!-- GAME 2: DEVIL'S TIC TAC TOE OVERLAY -->
+    <div id="ttt-modal" class="hidden absolute inset-0 bg-black/95 backdrop-blur-lg flex items-center justify-center p-4 z-50">
+        <div class="bg-red-950/20 border border-red-900/50 p-6 rounded-3xl max-w-sm w-full text-center shadow-2xl flex flex-col items-center">
+            <div class="text-3xl mb-1">❌👹⭕</div>
+            <h2 class="text-red-500 text-lg font-mono font-bold tracking-widest uppercase mb-4">DEVIL'S CROSS & ZERO</h2>
+            
+            <!-- Game Board Grid -->
+            <div class="grid grid-cols-3 gap-2 w-64 h-64 mb-4">
+                <button data-index="0" onclick="makePlayerMove(0)" class="ttt-cell bg-black/60 border border-red-900/40 rounded-xl text-2xl font-mono font-bold text-white hover:bg-red-950/30 transition-colors"></button>
+                <button data-index="1" onclick="makePlayerMove(1)" class="ttt-cell bg-black/60 border border-red-900/40 rounded-xl text-2xl font-mono font-bold text-white hover:bg-red-950/30 transition-colors"></button>
+                <button data-index="2" onclick="makePlayerMove(2)" class="ttt-cell bg-black/60 border border-red-900/40 rounded-xl text-2xl font-mono font-bold text-white hover:bg-red-950/30 transition-colors"></button>
+                <button data-index="3" onclick="makePlayerMove(3)" class="ttt-cell bg-black/60 border border-red-900/40 rounded-xl text-2xl font-mono font-bold text-white hover:bg-red-950/30 transition-colors"></button>
+                <button data-index="4" onclick="makePlayerMove(4)" class="ttt-cell bg-black/60 border border-red-900/40 rounded-xl text-2xl font-mono font-bold text-white hover:bg-red-950/30 transition-colors"></button>
+                <button data-index="5" onclick="makePlayerMove(5)" class="ttt-cell bg-black/60 border border-red-900/40 rounded-xl text-2xl font-mono font-bold text-white hover:bg-red-950/30 transition-colors"></button>
+                <button data-index="6" onclick="makePlayerMove(6)" class="ttt-cell bg-black/60 border border-red-900/40 rounded-xl text-2xl font-mono font-bold text-white hover:bg-red-950/30 transition-colors"></button>
+                <button data-index="7" onclick="makePlayerMove(7)" class="ttt-cell bg-black/60 border border-red-900/40 rounded-xl text-2xl font-mono font-bold text-white hover:bg-red-950/30 transition-colors"></button>
+                <button data-index="8" onclick="makePlayerMove(8)" class="ttt-cell bg-black/60 border border-red-900/40 rounded-xl text-2xl font-mono font-bold text-white hover:bg-red-950/30 transition-colors"></button>
+            </div>
+            <p id="ttt-feedback" class="text-red-400 text-xs font-mono min-h-[16px] mb-2">Your Turn. You are X.</p>
         </div>
     </div>
 
@@ -138,9 +160,10 @@
         const sendBtn = document.getElementById('send-btn');
         const prankModal = document.getElementById('prank-modal');
         const gameModal = document.getElementById('game-modal');
+        const tttModal = document.getElementById('ttt-modal');
         const historyList = document.getElementById('history-list');
         const bgAudio = document.getElementById('bg-audio');
-        const prankAudio = document.getElementById('prank-audio');
+        const prankAudio = document.getElementById('prank-alert');
         const hellAudio = document.getElementById('hell-audio');
         const winAudio = document.getElementById('game-win-audio');
         const loseAudio = document.getElementById('game-lose-audio');
@@ -150,182 +173,186 @@
         const bodyBg = document.getElementById('body-bg');
         const sidebarCard = document.getElementById('sidebar-card');
         const chatCard = document.getElementById('chat-card');
-        const headerPulse = document.getElementById('header-pulse');
         const headerTitle = document.getElementById('header-title');
         const devilGambleBtn = document.getElementById('devil-gamble-btn');
+        const devilTttBtn = document.getElementById('devil-ttt-btn');
 
-        let activeUser = null;
-        let messageCount = 0;
+        let activeUser = null, messageCount = 0;
         const MAX_FREE_MESSAGES = 3;
         let secretNumber = 0, livesLeft = 3, curseTimerInterval = null;
 
-        bgAudio.volume = 0.2; prankAudio.volume = 0.6; hellAudio.volume = 0.25;
-        winAudio.volume = 0.5; loseAudio.volume = 0.6; winStreakAudio.volume = 0.6; lossStreakAudio.volume = 0.6;
+        // Tic Tac Toe State
+        let tttBoard = ["", "", "", "", "", "", "", "", ""];
+        let isTttActive = false;
 
-        // --- CONNECT DATABASE ACCOUNT VIA ENDPOINTS ---
+        bgAudio.volume = 0.2; hellAudio.volume = 0.25; winAudio.volume = 0.5; loseAudio.volume = 0.6;
+
+        window.addEventListener('DOMContentLoaded', () => {
+            const isRemembered = localStorage.getItem('user_logged_in');
+            const curseEndTime = sessionStorage.getItem('curse_end_timestamp');
+            const now = Date.now();
+            if (isRemembered === 'true') {
+                authScreen.classList.add('hidden'); mainApp.classList.remove('hidden');
+                window.addEventListener('click', () => { 
+                    if (curseEndTime && parseInt(curseEndTime) > now) {
+                        applyCursedState(); startCurseCountdown(Math.ceil((parseInt(curseEndTime) - now) / 1000));
+                    } else { bgAudio.play(); }
+                }, { once: true });
+            }
+        });
+
         async function handleDbAuth(actionType) {
             const username = document.getElementById('login-user').value.trim();
             const password = document.getElementById('login-pass').value.trim();
-
-            if (!username || !password) {
-                alert("Credentials incomplete."); return;
-            }
-
-            const response = await fetch('/api/auth', {
-                method: 'POST',
-                headers: {'Content-Type': 'application/json'},
-                body: JSON.stringify({ username, password, action: actionType })
-            });
+            if (!username || !password) return alert("Credentials incomplete.");
+            const response = await fetch('/api/auth', { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({ username, password, action: actionType }) });
             const resData = await response.json();
-
-            if (!response.ok) {
-                alert(resData.error || "Authentication error."); return;
-            }
-
-            if (actionType === 'register') {
-                alert("Account forged in database! Click Sign In to execute profile session."); return;
-            }
-
-            // Successfully Logged In
-            activeUser = resData.username;
-            document.getElementById('user-profile-badge').innerText = activeUser;
-            
-            authScreen.classList.add('hidden');
-            mainApp.classList.remove('hidden');
-            
-            bgAudio.play();
-            fetchLeaderboard();
+            if (!response.ok) return alert(resData.error || "Authentication error.");
+            if (actionType === 'register') return alert("Account forged in database! Click Sign In.");
+            activeUser = resData.username; document.getElementById('user-profile-badge').innerText = activeUser;
+            authScreen.classList.add('hidden'); mainApp.classList.remove('hidden'); bgAudio.play(); fetchLeaderboard();
         }
 
-        // --- FETCH LIVE MULTIPLAYER LEADERBOARD ---
         async function fetchLeaderboard() {
             try {
                 const response = await fetch('/api/leaderboard');
                 const board = await response.json();
                 const container = document.getElementById('leaderboard-container');
                 container.innerHTML = "";
-
                 board.forEach((player, idx) => {
-                    const crowns = idx === 0 ? "👑 " : "💀 ";
-                    container.innerHTML += `
-                        <div class="flex justify-between items-center text-white/60 bg-white/5 p-1 px-2 rounded-lg border border-white/5">
-                            <span>${crowns}${player.username}</span>
-                            <span class="text-green-400 font-bold">${player.streak}x</span>
-                        </div>
-                    `;
+                    container.innerHTML += `<div class="flex justify-between items-center text-white/60 bg-white/5 p-1 px-2 rounded-lg border border-white/5"><span>${idx === 0 ? "👑 " : "💀 "}${player.username}</span><span class="text-green-400 font-bold">${player.streak}x</span></div>`;
                 });
-            } catch (e) { console.error("Error loading highscores", e); }
+            } catch (e) { console.error(e); }
         }
 
         function startDevilGame() {
             if (sessionStorage.getItem('curse_end_timestamp')) return;
-            prankAudio.pause(); bgAudio.pause(); hellAudio.play();
-
-            secretNumber = Math.floor(Math.random() * 10) + 1;
-            livesLeft = 3;
+            bgAudio.pause(); hellAudio.play();
+            secretNumber = Math.floor(Math.random() * 10) + 1; livesLeft = 3;
             document.getElementById('game-lives').innerText = livesLeft;
-            document.getElementById('game-feedback').innerText = "";
-            document.getElementById('game-guess').value = "";
-
             document.getElementById('ui-win-streak').innerText = (sessionStorage.getItem('w_streak') || "0") + "x";
             document.getElementById('ui-loss-streak').innerText = (sessionStorage.getItem('l_streak') || "0") + "x";
-
-            prankModal.classList.add('hidden');
-            gameModal.classList.remove('hidden');
+            prankModal.classList.add('hidden'); gameModal.classList.remove('hidden');
         }
 
-        async function submitDevilGuess() {
-            const guessInput = document.getElementById('game-guess');
-            const feedbackText = document.getElementById('game-feedback');
-            const userGuess = parseInt(guessInput.value);
-
-            if (isNaN(userGuess) || userGuess < 1 || userGuess > 10) {
-                feedbackText.innerText = "Pick a number between 1 and 10."; return;
-            }
-
-            if (userGuess === secretNumber) {
-                gameModal.classList.add('hidden');
-                hellAudio.pause();
-
+        async function handleGameResolution(outcome) {
+            if (outcome === 'win') {
                 let wStreak = parseInt(sessionStorage.getItem('w_streak') || "0") + 1;
-                sessionStorage.setItem('w_streak', wStreak.toString());
-                sessionStorage.removeItem('l_streak'); 
-
+                sessionStorage.setItem('w_streak', wStreak.toString()); sessionStorage.removeItem('l_streak');
                 if (wStreak >= 2) winStreakAudio.play(); else winAudio.play();
-
-                // Save new Win Streak directly into the Database!
-                await fetch('/api/leaderboard/update', {
-                    method: 'POST',
-                    headers: {'Content-Type': 'application/json'},
-                    body: JSON.stringify({ username: activeUser, streak: wStreak })
-                });
-
-                bgAudio.play();
-                sessionStorage.setItem('dont_bother_granted', 'true');
-                revertToNormalStyles();
-                fetchLeaderboard(); // Update sidebar live
-
+                await fetch('/api/leaderboard/update', { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({ username: activeUser, streak: wStreak }) });
+                bgAudio.play(); sessionStorage.setItem('dont_bother_granted', 'true'); revertToNormalStyles(); fetchLeaderboard();
                 alert(`👹: "you won bcz i let you win. (Win Streak: ${wStreak}x)"`);
-                return;
-            }
-
-            livesLeft--;
-            document.getElementById('game-lives').innerText = livesLeft;
-
-            if (livesLeft <= 0) {
-                gameModal.classList.add('hidden');
-                hellAudio.pause();
-
+            } else {
                 let lStreak = parseInt(sessionStorage.getItem('l_streak') || "0") + 1;
-                sessionStorage.setItem('l_streak', lStreak.toString());
-                sessionStorage.removeItem('w_streak'); 
-                sessionStorage.removeItem('dont_bother_granted');
-
+                sessionStorage.setItem('l_streak', lStreak.toString()); sessionStorage.removeItem('w_streak'); sessionStorage.removeItem('dont_bother_granted');
                 if (lStreak >= 2) lossStreakAudio.play(); else loseAudio.play();
-
                 let finalTimeInSeconds = 9 * lStreak;
                 sessionStorage.setItem('curse_end_timestamp', (Date.now() + (finalTimeInSeconds * 1000)).toString());
-
-                applyCursedState();
-                startCurseCountdown(finalTimeInSeconds);
-
+                applyCursedState(); startCurseCountdown(finalTimeInSeconds);
                 alert(`👹: "playing with the devil was a great choice. (Loss Streak: ${lStreak}x)"`);
-                return;
             }
+        }
 
-            feedbackText.innerText = userGuess < secretNumber ? "Too low. Flames rise." : "Too high. Soul drifts.";
-            guessInput.value = "";
+        function submitDevilGuess() {
+            const userGuess = parseInt(document.getElementById('game-guess').value);
+            if (isNaN(userGuess) || userGuess < 1 || userGuess > 10) return;
+            if (userGuess === secretNumber) { gameModal.classList.add('hidden'); hellAudio.pause(); handleGameResolution('win'); return; }
+            livesLeft--; document.getElementById('game-lives').innerText = livesLeft;
+            if (livesLeft <= 0) { gameModal.classList.add('hidden'); hellAudio.pause(); handleGameResolution('loss'); return; }
+            document.getElementById('game-feedback').innerText = userGuess < secretNumber ? "Too low. Flames rise." : "Too high. Soul drifts.";
+        }
+
+        // --- GAME 2: TIC-TAC-TOE ENGINE LOGIC ---
+        function startTicTacToeGame() {
+            if (sessionStorage.getItem('curse_end_timestamp')) return;
+            bgAudio.pause(); hellAudio.play();
+            tttBoard = ["", "", "", "", "", "", "", "", ""];
+            isTttActive = true;
+            document.querySelectorAll('.ttt-cell').forEach(cell => cell.innerText = "");
+            document.getElementById('ttt-feedback').innerText = "Your turn. You are X.";
+            prankModal.classList.add('hidden'); tttModal.classList.remove('hidden');
+        }
+
+        function makePlayerMove(index) {
+            if (!isTttActive || tttBoard[index] !== "") return;
+            tttBoard[index] = "X";
+            document.querySelector(`[data-index='${index}']`).innerText = "X";
+            if (checkTttWinner("X")) { endTtt('win'); return; }
+            if (!tttBoard.includes("")) { endTtt('draw'); return; }
+            
+            document.getElementById('ttt-feedback').innerText = "Devil is calculating...";
+            setTimeout(makeDevilMove, 600);
+        }
+
+        function makeDevilMove() {
+            if (!isTttActive) return;
+            // Unbeatable Devil: AI picks the absolute best available cell
+            let bestScore = -Infinity; let move;
+            for (let i = 0; i < 9; i++) {
+                if (tttBoard[i] === "") {
+                    tttBoard[i] = "O"; let score = minimax(tttBoard, 0, false); tttBoard[i] = "";
+                    if (score > bestScore) { bestScore = score; move = i; }
+                }
+            }
+            tttBoard[move] = "O";
+            document.querySelector(`[data-index='${move}']`).innerText = "O";
+            if (checkTttWinner("O")) { endTtt('loss'); return; }
+            if (!tttBoard.includes("")) { endTtt('draw'); return; }
+            document.getElementById('ttt-feedback').innerText = "Your turn.";
+        }
+
+        function minimax(board, depth, isMaximizing) {
+            if (checkTttWinner("O")) return 10 - depth;
+            if (checkTttWinner("X")) return depth - 10;
+            if (!board.includes("")) return 0;
+            if (isMaximizing) {
+                let bestScore = -Infinity;
+                for (let i = 0; i < 9; i++) {
+                    if (board[i] === "") { board[i] = "O"; let score = minimax(board, depth + 1, false); board[i] = ""; bestScore = Math.max(score, bestScore); }
+                }
+                return bestScore;
+            } else {
+                let bestScore = Infinity;
+                for (let i = 0; i < 9; i++) {
+                    if (board[i] === "") { board[i] = "X"; let score = minimax(board, depth + 1, true); board[i] = ""; bestScore = Math.min(score, bestScore); }
+                }
+                return bestScore;
+            }
+        }
+
+        function checkTttWinner(p) {
+            const winPatterns = [[0,1,2],[3,4,5],[6,7,8],[0,3,6],[1,4,7],[2,5,8],[0,4,8],[2,4,6]];
+            return winPatterns.some(pattern => pattern.every(idx => tttBoard[idx] === p));
+        }
+
+        function endTtt(result) {
+            isTttActive = false; tttModal.classList.add('hidden'); hellAudio.pause();
+            if (result === 'win') { handleGameResolution('win'); }
+            else if (result === 'draw') { bgAudio.play(); revertToNormalStyles(); alert("👹: 'A draw? Impressive resilience mortal. You bypass execution for now.'"); }
+            else { handleGameResolution('loss'); }
         }
 
         function startCurseCountdown(durationInSeconds) {
             if (curseTimerInterval) clearInterval(curseTimerInterval);
-            let timeLeft = durationInSeconds;
-            userInput.placeholder = `CURSED TO SILENCE (${timeLeft}s)`;
-
+            let timeLeft = durationInSeconds; userInput.placeholder = `CURSED TO SILENCE (${timeLeft}s)`;
             curseTimerInterval = setInterval(() => {
-                timeLeft--;
-                if (timeLeft <= 0) {
-                    clearInterval(curseTimerInterval);
-                    sessionStorage.removeItem('curse_end_timestamp');
-                    revertToNormalStyles();
-                    bgAudio.play();
-                } else {
-                    userInput.placeholder = `CURSED TO SILENCE (${timeLeft}s)`;
-                }
+                timeLeft--; if (timeLeft <= 0) { clearInterval(curseTimerInterval); sessionStorage.removeItem('curse_end_timestamp'); revertToNormalStyles(); bgAudio.play(); } 
+                else { userInput.placeholder = `CURSED TO SILENCE (${timeLeft}s)`; }
             }, 1000);
         }
 
         function applyCursedState() {
             bodyBg.className = "theme-red h-screen w-screen flex flex-col items-center justify-center p-4 relative overflow-hidden curse-shake";
-            sidebarCard.className = "w-64 flex flex-col rounded-3xl bg-black/80 border border-red-700/80 backdrop-blur-3xl p-4 overflow-hidden shadow-[0_0_30px_rgba(220,38,38,0.2)]";
-            chatCard.className = "flex-1 flex flex-col rounded-3xl bg-black/80 border border-red-700/80 backdrop-blur-3xl overflow-hidden shadow-[0_0_50px_rgba(220,38,38,0.3)]";
-            headerTitle.innerText = "☠️ SYSTEM CURSED ☠️";
-            headerTitle.className = "text-red-600 font-mono text-center w-full animate-pulse";
-            userInput.disabled = true; sendBtn.disabled = true;
+            sidebarCard.className = "w-64 flex flex-col rounded-3xl bg-black/80 border border-red-700/80 backdrop-blur-3xl p-4 shadow-[0_0_30px_rgba(220,38,38,0.2)]";
+            chatCard.className = "flex-1 flex flex-col rounded-3xl bg-black/80 border border-red-700/80 backdrop-blur-3xl shadow-2xl overflow-hidden shadow-[0_0_50px_rgba(220,38,38,0.3)]";
+            headerTitle.innerText = "☠️ SYSTEM CURSED ☠️"; headerTitle.className = "text-red-600 font-mono text-center w-full animate-pulse";
+            userInput.disabled = true; sendBtn.disabled = true; devilGambleBtn.disabled = true; devilTttBtn.disabled = true;
             userInput.className = "flex-1 px-4 py-3 bg-black/60 border border-red-900/80 rounded-xl text-red-500 text-center font-mono outline-none";
             sendBtn.className = "px-5 py-3 bg-red-950 border border-red-900 text-red-800/40 cursor-not-allowed";
-            devilGambleBtn.disabled = true;
             devilGambleBtn.className = "w-full mt-2 py-2.5 bg-black text-red-900/20 text-xs font-mono rounded-xl border border-red-950 cursor-not-allowed";
+            devilTttBtn.className = "w-full mt-1.5 py-2.5 bg-black text-red-900/20 text-xs font-mono rounded-xl border border-red-950 cursor-not-allowed";
+            musicBtn.innerText = "🔇 LOCKED BY CURSE"; musicBtn.disabled = true; musicBtn.className = "w-full mt-4 py-2 bg-black text-red-900/40 text-xs font-mono rounded-xl border border-red-950 cursor-not-allowed";
         }
 
         function revertToNormalStyles() {
@@ -333,19 +360,17 @@
             sidebarCard.className = "w-64 flex flex-col rounded-3xl bg-white/5 border border-white/10 backdrop-blur-xl p-4 overflow-hidden";
             chatCard.className = "flex-1 flex flex-col rounded-3xl bg-white/5 border border-white/10 backdrop-blur-xl shadow-2xl overflow-hidden";
             headerTitle.innerText = "Aadhunik Manushya"; headerTitle.className = "text-white font-medium tracking-wide";
-            userInput.disabled = false; sendBtn.disabled = false;
-            userInput.placeholder = "Type a message...";
-            userInput.className = "flex-1 px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white outline-none";
-            sendBtn.className = "px-5 py-3 bg-purple-600 hover:bg-purple-500 text-white font-medium rounded-xl transition-all";
-            devilGambleBtn.disabled = false;
-            devilGambleBtn.className = "w-full mt-2 py-2.5 bg-red-950/40 hover:bg-red-900/40 border border-red-900/30 text-red-400 text-xs font-mono rounded-xl transition-all flex items-center justify-center gap-2 tracking-wider";
-            messageCount = 0;
+            userInput.disabled = false; sendBtn.disabled = false; devilGambleBtn.disabled = false; devilTttBtn.disabled = false;
+            userInput.placeholder = "Type a message..."; userInput.className = "flex-1 px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white outline-none";
+            sendBtn.className = "px-5 py-3 bg-purple-600 hover:bg-purple-500 text-white font-medium rounded-xl transition-all shadow-lg shadow-purple-600/30";
+            devilGambleBtn.className = "w-full mt-2 py-2 bg-red-950/40 hover:bg-red-900/40 border border-red-900/30 text-red-400 text-xs font-mono rounded-xl transition-all flex items-center justify-center gap-2 tracking-wider";
+            devilTttBtn.className = "w-full mt-1.5 py-2 bg-red-950/40 hover:bg-red-900/40 border border-red-900/30 text-red-400 text-xs font-mono rounded-xl transition-all flex items-center justify-center gap-2 tracking-wider";
+            messageCount = 0; musicBtn.disabled = false; musicBtn.innerText = "🎵 Pause Music"; musicBtn.className = "w-full mt-4 py-2 bg-purple-600/20 text-purple-300 text-xs rounded-xl border border-purple-500/30";
         }
 
         function toggleMusic() {
             if (sessionStorage.getItem('curse_end_timestamp')) return;
-            if (bgAudio.paused) { bgAudio.play(); musicBtn.innerText = "🎵 Pause Music"; } 
-            else { bgAudio.pause(); musicBtn.innerText = "🔇 Play Music"; }
+            if (bgAudio.paused) { bgAudio.play(); musicBtn.innerText = "🎵 Pause Music"; } else { bgAudio.pause(); musicBtn.innerText = "🔇 Play Music"; }
         }
 
         function startNewChat() {
@@ -356,23 +381,16 @@
         async function sendMessage() {
             if (sessionStorage.getItem('curse_end_timestamp')) return;
             const text = userInput.value.trim(); if (!text) return;
-
             messageCount++;
             chatBox.innerHTML += `<div class="bg-purple-600/30 p-3 rounded-2xl max-w-[80%] ml-auto text-right">${text}</div>`;
             userInput.value = ''; chatBox.scrollTop = chatBox.scrollHeight;
-
-            if (sessionStorage.getItem('dont_bother_granted') === 'true') {
-                // Immunity path
-            } else if (messageCount >= MAX_FREE_MESSAGES) {
-                userInput.disabled = true; sendBtn.disabled = true;
-                userInput.placeholder = "Subscription required...";
-                setTimeout(() => { bgAudio.pause(); prankAudio.play(); prankModal.classList.remove('hidden'); }, 1200);
+            if (sessionStorage.getItem('dont_bother_granted') === 'true') {} 
+            else if (messageCount >= MAX_FREE_MESSAGES) {
+                userInput.disabled = true; sendBtn.disabled = true; userInput.placeholder = "Subscription required...";
+                setTimeout(() => { bgAudio.pause(); prankModal.classList.remove('hidden'); }, 1200);
                 return;
             }
-
-            // ... (Your Groq fetch execution logic goes here) ...
         }
-
         userInput.addEventListener('keydown', (e) => { if(e.key === 'Enter' && !userInput.disabled) sendMessage(); });
     </script>
 </body>
