@@ -137,333 +137,324 @@
     <div class="absolute bottom-2 text-white/30 text-[10px] font-mono tracking-widest uppercase text-center w-full select-none">made by debartha AKA VOTECX</div>
 
     <script>
-        const authScreen = document.getElementById('auth-screen');
-        const mainApp = document.getElementById('main-app');
-        const chatBox = document.getElementById('chat-box');
-        const userInput = document.getElementById('user-input');
-        const sendBtn = document.getElementById('send-btn');
-        const prankModal = document.getElementById('prank-modal');
-        const gameModal = document.getElementById('game-modal');
-        const historyList = document.getElementById('history-list');
-        const bgAudio = document.getElementById('bg-audio');
-        const prankAudio = document.getElementById('prank-audio');
-        const hellAudio = document.getElementById('hell-audio');
-        const winAudio = document.getElementById('game-win-audio');
-        const loseAudio = document.getElementById('game-lose-audio');
-        const winStreakAudio = document.getElementById('win-streak-audio');
-        const lossStreakAudio = document.getElementById('loss-streak-audio');
-        const musicBtn = document.getElementById('music-btn');
-        const bodyBg = document.getElementById('body-bg');
-        const sidebarCard = document.getElementById('sidebar-card');
-        const chatCard = document.getElementById('chat-card');
-        const headerPulse = document.getElementById('header-pulse');
-        const headerTitle = document.getElementById('header-title');
-        const devilGambleBtn = document.getElementById('devil-gamble-btn');
+    // --- DOM ELEMENT SELECTORS ---
+    const authScreen = document.getElementById('auth-screen');
+    const mainApp = document.getElementById('main-app');
+    const chatBox = document.getElementById('chat-box');
+    const userInput = document.getElementById('user-input');
+    const sendBtn = document.getElementById('send-btn');
+    const prankModal = document.getElementById('prank-modal');
+    const gameModal = document.getElementById('game-modal');
+    const tttModal = document.getElementById('ttt-modal'); // Fixed missing reference
+    const historyList = document.getElementById('history-list');
+    const bgAudio = document.getElementById('bg-audio');
+    const prankAudio = document.getElementById('prank-audio');
+    const hellAudio = document.getElementById('hell-audio');
+    const winAudio = document.getElementById('game-win-audio');
+    const loseAudio = document.getElementById('game-lose-audio');
+    const winStreakAudio = document.getElementById('win-streak-audio');
+    const lossStreakAudio = document.getElementById('loss-streak-audio');
+    const musicBtn = document.getElementById('music-btn');
+    const bodyBg = document.getElementById('body-bg');
+    const sidebarCard = document.getElementById('sidebar-card');
+    const chatCard = document.getElementById('chat-card');
+    const headerPulse = document.getElementById('header-pulse');
+    const headerTitle = document.getElementById('header-title');
+    const devilGambleBtn = document.getElementById('devil-gamble-btn');
+    const devilTttBtn = document.getElementById('devil-ttt-btn'); // Fixed missing reference
 
-        let messageCount = 0;
-        const MAX_FREE_MESSAGES = 3;
+    // --- APPLICATION RUNTIME STATE ---
+    let activeUser = "Guest";
+    let messageCount = 0;
+    const MAX_FREE_MESSAGES = 3;
 
-        let secretNumber = 0;
-        let livesLeft = 3;
-        let curseTimerInterval = null;
+    // Game 1: Wager state
+    let secretNumber = 0;
+    let livesLeft = 3;
+    let curseTimerInterval = null;
 
-        bgAudio.volume = 0.2;
-        prankAudio.volume = 0.6;
-        hellAudio.volume = 0.25;
-        winAudio.volume = 0.5;
-        loseAudio.volume = 0.6;
-        winStreakAudio.volume = 0.6;
-        lossStreakAudio.volume = 0.6;
+    // Game 2: Tic-Tac-Toe state
+    let tttBoard = ["", "", "", "", "", "", "", "", ""];
+    let isTttActive = false;
 
-        window.addEventListener('DOMContentLoaded', () => {
-            const isRemembered = localStorage.getItem('user_logged_in');
-            const curseEndTime = sessionStorage.getItem('curse_end_timestamp');
-            const now = Date.now();
+    // --- VOLUME MIXER PROFILE ---
+    bgAudio.volume = 0.2;
+    prankAudio.volume = 0.6;
+    hellAudio.volume = 0.25;
+    winAudio.volume = 0.5;
+    loseAudio.volume = 0.6;
+    if (winStreakAudio) winStreakAudio.volume = 0.6;
+    if (lossStreakAudio) lossStreakAudio.volume = 0.6;
 
-            if (isRemembered === 'true') {
-                authScreen.classList.add('hidden');
-                mainApp.classList.remove('hidden');
-                
-                window.addEventListener('click', () => { 
-                    if (curseEndTime && parseInt(curseEndTime) > now) {
-                        const remainingSeconds = Math.ceil((parseInt(curseEndTime) - now) / 1000);
-                        applyCursedState();
-                        startCurseCountdown(remainingSeconds);
-                    } else {
-                        bgAudio.play();
-                    }
-                }, { once: true });
-            }
-        });
-
-        function handleInitialLogin() {
-            const user = document.getElementById('login-user').value.trim();
-            const pass = document.getElementById('login-pass').value.trim();
-            const rememberMe = document.getElementById('remember-me').checked;
-
-            if (!user || !pass) {
-                alert("Please complete the authorization profile.");
-                return;
-            }
-
-            if (rememberMe) localStorage.setItem('user_logged_in', 'true');
-
+    // --- SESSION INITIALIZATION ---
+    window.addEventListener('DOMContentLoaded', () => {
+        const curseEndTime = sessionStorage.getItem('curse_end_timestamp');
+        const now = Date.now();
+        
+        if (curseEndTime && parseInt(curseEndTime) > now) {
             authScreen.classList.add('hidden');
             mainApp.classList.remove('hidden');
-            
-            const curseEndTime = sessionStorage.getItem('curse_end_timestamp');
-            const now = Date.now();
-
-            if (curseEndTime && parseInt(curseEndTime) > now) {
-                const remainingSeconds = Math.ceil((parseInt(curseEndTime) - now) / 1000);
+            window.addEventListener('click', () => { 
                 applyCursedState();
-                startCurseCountdown(remainingSeconds);
-            } else {
-                bgAudio.play();
-            }
+                startCurseCountdown(Math.ceil((parseInt(curseEndTime) - now) / 1000));
+            }, { once: true });
         }
+    });
 
-        function startDevilGame() {
-            if (sessionStorage.getItem('curse_end_timestamp')) return;
+    function handleSkipAuth() {
+        activeUser = "Guest";
+        document.getElementById('user-profile-badge').innerText = activeUser;
+        authScreen.classList.add('hidden');
+        mainApp.classList.remove('hidden');
+        bgAudio.play();
+    }
+
+    // --- CORE GAME LIFT RESOLUTION ---
+    async function handleGameResolution(outcome) {
+        if (outcome === 'win') {
+            let wStreak = parseInt(sessionStorage.getItem('w_streak') || "0") + 1;
+            sessionStorage.setItem('w_streak', wStreak.toString());
+            sessionStorage.removeItem('l_streak');
             
-            prankAudio.pause();
-            bgAudio.pause();
-            hellAudio.play();
-
-            secretNumber = Math.floor(Math.random() * 10) + 1;
-            livesLeft = 3;
-            document.getElementById('game-lives').innerText = livesLeft;
-            document.getElementById('game-feedback').innerText = "";
-            document.getElementById('game-guess').value = "";
-
-            document.getElementById('ui-win-streak').innerText = (sessionStorage.getItem('w_streak') || "0") + "x";
-            document.getElementById('ui-loss-streak').innerText = (sessionStorage.getItem('l_streak') || "0") + "x";
-
-            prankModal.classList.add('hidden');
-            gameModal.classList.remove('hidden');
+            if (wStreak >= 2 && winStreakAudio) winStreakAudio.play(); else winAudio.play();
+            
+            bgAudio.play();
+            sessionStorage.setItem('dont_bother_granted', 'true');
+            revertToNormalStyles();
+            alert(`👹: "you won bcz i let you win. (Win Streak: ${wStreak}x)"`);
+        } else {
+            let lStreak = parseInt(sessionStorage.getItem('l_streak') || "0") + 1;
+            sessionStorage.setItem('l_streak', lStreak.toString());
+            sessionStorage.removeItem('w_streak');
+            sessionStorage.removeItem('dont_bother_granted');
+            
+            if (lStreak >= 2 && lossStreakAudio) lossStreakAudio.play(); else loseAudio.play();
+            
+            let finalTimeInSeconds = 9 * lStreak;
+            sessionStorage.setItem('curse_end_timestamp', (Date.now() + (finalTimeInSeconds * 1000)).toString());
+            
+            applyCursedState();
+            startCurseCountdown(finalTimeInSeconds);
+            alert(`👹: "playing with the devil was a great choice. (Loss Streak: ${lStreak}x)"`);
         }
+    }
 
-        function submitDevilGuess() {
-            const guessInput = document.getElementById('game-guess');
-            const feedbackText = document.getElementById('game-feedback');
-            const userGuess = parseInt(guessInput.value);
+    // --- GAME 1: DEVIL'S WAGER ---
+    function startDevilGame() {
+        if (sessionStorage.getItem('curse_end_timestamp')) return;
+        prankAudio.pause(); bgAudio.pause(); hellAudio.play();
+        secretNumber = Math.floor(Math.random() * 10) + 1;
+        livesLeft = 3;
+        document.getElementById('game-lives').innerText = livesLeft;
+        document.getElementById('ui-win-streak').innerText = (sessionStorage.getItem('w_streak') || "0") + "x";
+        document.getElementById('ui-loss-streak').innerText = (sessionStorage.getItem('l_streak') || "0") + "x";
+        prankModal.classList.add('hidden');
+        gameModal.classList.remove('hidden');
+    }
 
-            if (isNaN(userGuess) || userGuess < 1 || userGuess > 10) {
-                feedbackText.innerText = "Pick a valid coordinate between 1 and 10.";
-                return;
+    function submitDevilGuess() {
+        const userGuess = parseInt(document.getElementById('game-guess').value);
+        if (isNaN(userGuess) || userGuess < 1 || userGuess > 10) return;
+        
+        if (userGuess === secretNumber) {
+            gameModal.classList.add('hidden');
+            hellAudio.pause();
+            handleGameResolution('win');
+            return;
+        }
+        livesLeft--;
+        document.getElementById('game-lives').innerText = livesLeft;
+        if (livesLeft <= 0) {
+            gameModal.classList.add('hidden');
+            hellAudio.pause();
+            handleGameResolution('loss');
+            return;
+        }
+        document.getElementById('game-feedback').innerText = userGuess < secretNumber ? "Too low. Flames rise." : "Too high. Soul drifts.";
+    }
+
+    // --- GAME 2: TIC-TAC-TOE ENGINE ---
+    function startTicTacToeGame() {
+        if (sessionStorage.getItem('curse_end_timestamp')) return;
+        prankAudio.pause(); bgAudio.pause(); hellAudio.play();
+        tttBoard = ["", "", "", "", "", "", "", "", ""];
+        isTttActive = true;
+        document.querySelectorAll('.ttt-cell').forEach(cell => cell.innerText = "");
+        document.getElementById('ttt-feedback').innerText = "Your turn. You are X.";
+        prankModal.classList.add('hidden');
+        tttModal.classList.remove('hidden');
+    }
+
+    function makePlayerMove(index) {
+        if (!isTttActive || tttBoard[index] !== "") return;
+        tttBoard[index] = "X";
+        document.querySelectorAll('.ttt-cell')[index].innerText = "X";
+        if (checkTttWinner("X")) { endTtt('win'); return; }
+        if (!tttBoard.includes("")) { endTtt('draw'); return; }
+        document.getElementById('ttt-feedback').innerText = "Devil calculating...";
+        setTimeout(makeDevilMove, 600);
+    }
+
+    function makeDevilMove() {
+        if (!isTttActive) return;
+        let bestScore = -Infinity;
+        let move;
+        for (let i = 0; i < 9; i++) {
+            if (tttBoard[i] === "") {
+                tttBoard[i] = "O";
+                let score = minimax(tttBoard, 0, false);
+                tttBoard[i] = "";
+                if (score > bestScore) { bestScore = score; move = i; }
             }
+        }
+        tttBoard[move] = "O";
+        document.querySelectorAll('.ttt-cell')[move].innerText = "O";
+        if (checkTttWinner("O")) { endTtt('loss'); return; }
+        if (!tttBoard.includes("")) { endTtt('draw'); return; }
+        document.getElementById('ttt-feedback').innerText = "Your turn.";
+    }
 
-            if (userGuess === secretNumber) {
-                gameModal.classList.add('hidden');
-                hellAudio.pause();
+    function minimax(board, depth, isMaximizing) {
+        if (checkTttWinner("O")) return 10 - depth;
+        if (checkTttWinner("X")) return depth - 10;
+        if (!board.includes("")) return 0;
+        
+        if (isMaximizing) {
+            let bestScore = -Infinity;
+            for (let i = 0; i < 9; i++) {
+                if (board[i] === "") { board[i] = "O"; let score = minimax(board, depth + 1, false); board[i] = ""; bestScore = Math.max(score, bestScore); }
+            }
+            return bestScore;
+        } else {
+            let bestScore = Infinity;
+            for (let i = 0; i < 9; i++) {
+                if (board[i] === "") { board[i] = "X"; let score = minimax(board, depth + 1, true); board[i] = ""; bestScore = Math.min(score, bestScore); }
+            }
+            return bestScore;
+        }
+    }
 
-                let wStreak = parseInt(sessionStorage.getItem('w_streak') || "0") + 1;
-                sessionStorage.setItem('w_streak', wStreak.toString());
-                sessionStorage.removeItem('l_streak'); 
+    function checkTttWinner(p) {
+        const winPatterns = [[0,1,2],[3,4,5],[6,7,8],[0,3,6],[1,4,7],[2,5,8],[0,4,8],[2,4,6]];
+        return winPatterns.some(pattern => pattern.every(idx => tttBoard[idx] === p));
+    }
 
-                if (wStreak >= 2) {
-                    winStreakAudio.play();
-                } else {
-                    winAudio.play();
-                }
+    function endTtt(result) {
+        isTttActive = false;
+        tttModal.classList.add('hidden');
+        hellAudio.pause();
+        if (result === 'win') handleGameResolution('win');
+        else if (result === 'draw') { bgAudio.play(); revertToNormalStyles(); alert("👹: 'A draw? Resilience noted mortal.'"); }
+        else handleGameResolution('loss');
+    }
 
-                bgAudio.play();
-                sessionStorage.setItem('dont_bother_granted', 'true');
+    // --- CURSE COUNTDOWN HANDLERS ---
+    function startCurseCountdown(durationInSeconds) {
+        if (curseTimerInterval) clearInterval(curseTimerInterval);
+        let timeLeft = durationInSeconds;
+        userInput.placeholder = `CURSED TO SILENCE (${timeLeft}s)`;
+
+        curseTimerInterval = setInterval(() => {
+            timeLeft--;
+            if (timeLeft <= 0) {
+                clearInterval(curseTimerInterval);
+                sessionStorage.removeItem('curse_end_timestamp');
                 revertToNormalStyles();
-
-                alert(`👹: "you won bcz i let you win. (Win Streak: ${wStreak}x)"`);
-                return;
-            }
-
-            livesLeft--;
-            document.getElementById('game-lives').innerText = livesLeft;
-
-            if (livesLeft <= 0) {
-                gameModal.classList.add('hidden');
-                hellAudio.pause();
-
-                let lStreak = parseInt(sessionStorage.getItem('l_streak') || "0") + 1;
-                sessionStorage.setItem('l_streak', lStreak.toString());
-                sessionStorage.removeItem('w_streak'); 
-                sessionStorage.removeItem('dont_bother_granted'); // Revoke immunity if they play and lose willingly!
-
-                if (lStreak >= 2) {
-                    lossStreakAudio.play();
-                } else {
-                    loseAudio.play();
-                }
-
-                const initialCurseSeconds = 9;
-                let finalTimeInSeconds = initialCurseSeconds * lStreak;
-
-                const expiryTime = Date.now() + (finalTimeInSeconds * 1000);
-                sessionStorage.setItem('curse_end_timestamp', expiryTime.toString());
-
-                applyCursedState();
-                startCurseCountdown(finalTimeInSeconds);
-
-                alert(`👹: "playing with the devil was a great choice. (Loss Streak: ${lStreak}x)"`);
-                return;
-            }
-
-            if (userGuess < secretNumber) {
-                feedbackText.innerText = "Too low. The flames rise higher.";
+                bgAudio.play();
             } else {
-                feedbackText.innerText = "Too high. Your soul is drifting.";
-            }
-            guessInput.value = "";
-        }
-
-        function startCurseCountdown(durationInSeconds) {
-            if (curseTimerInterval) clearInterval(curseTimerInterval);
-
-            let timeLeft = durationInSeconds;
-
-            function updateTimerDisplay() {
                 userInput.placeholder = `CURSED TO SILENCE (${timeLeft}s)`;
             }
+        }, 1000);
+    }
 
-            updateTimerDisplay();
+    function applyCursedState() {
+        bodyBg.className = "theme-red h-screen w-screen flex flex-col items-center justify-center p-2 sm:p-4 relative overflow-hidden curse-shake";
+        headerTitle.innerText = "☠️ SYSTEM CURSED ☠️";
+        headerTitle.className = "text-red-600 font-mono text-center text-xs sm:text-sm w-full animate-pulse";
+        headerPulse.className = "w-2.5 h-2.5 rounded-full bg-red-600 animate-ping flex-shrink-0";
+        
+        userInput.disabled = true; sendBtn.disabled = true; devilGambleBtn.disabled = true; devilTttBtn.disabled = true;
+        userInput.className = "flex-1 px-4 py-3 bg-black/60 border border-red-900/80 rounded-xl text-red-500 text-center font-mono text-xs sm:text-sm outline-none";
+        sendBtn.className = "px-5 py-3 bg-red-950 border border-red-900 text-red-800/40 font-mono text-xs sm:text-sm cursor-not-allowed";
+        musicBtn.innerText = "🔇 LOCKED BY CURSE"; musicBtn.disabled = true;
+    }
 
-            curseTimerInterval = setInterval(() => {
-                timeLeft--;
-                if (timeLeft <= 0) {
-                    clearInterval(curseTimerInterval);
-                    sessionStorage.removeItem('curse_end_timestamp');
-                    revertToNormalStyles();
-                    bgAudio.play();
-                } else {
-                    updateTimerDisplay();
-                }
-            }, 1000);
+    function revertToNormalStyles() {
+        bodyBg.className = "theme-blue h-screen w-screen flex flex-col items-center justify-center p-2 sm:p-4 relative overflow-hidden";
+        headerTitle.innerText = "Aadhunik Manushya";
+        headerTitle.className = "text-white font-medium text-sm sm:text-base tracking-wide";
+        headerPulse.className = "w-2.5 h-2.5 rounded-full bg-purple-400 animate-pulse flex-shrink-0";
+        
+        userInput.disabled = false; sendBtn.disabled = false; devilGambleBtn.disabled = false; devilTttBtn.disabled = false;
+        userInput.placeholder = "Type a message...";
+        userInput.className = "flex-1 px-3 sm:px-4 py-2.5 sm:py-3 bg-white/5 border border-white/10 rounded-xl text-white outline-none focus:border-purple-500 text-xs sm:text-sm";
+        sendBtn.className = "px-4 sm:px-5 py-2.5 sm:py-3 bg-purple-600 hover:bg-purple-500 text-white font-medium text-xs sm:text-sm rounded-xl transition-all shadow-lg shadow-purple-600/30";
+        messageCount = 0;
+        musicBtn.innerText = "🎵 Pause"; musicBtn.disabled = false;
+    }
+
+    // --- AI STREAMING PANEL CHAT ENGINE ---
+    async function sendMessage() {
+        if (sessionStorage.getItem('curse_end_timestamp')) return;
+        const text = userInput.value.trim(); if (!text) return;
+
+        chatBox.innerHTML += `<div class="bg-purple-600/30 p-3 rounded-2xl max-w-[85%] sm:max-w-[80%] ml-auto text-right text-white">${text}</div>`;
+        userInput.value = ''; 
+        chatBox.scrollTop = chatBox.scrollHeight;
+
+        messageCount++;
+        if (sessionStorage.getItem('dont_bother_granted') === 'true') {
+            // Unlocked session path
+        } else if (messageCount >= MAX_FREE_MESSAGES) {
+            userInput.disabled = true; sendBtn.disabled = true; userInput.placeholder = "Subscription required...";
+            setTimeout(() => { bgAudio.pause(); prankModal.classList.remove('hidden'); }, 1200);
+            return;
         }
 
-        function applyCursedState() {
-            bodyBg.className = "theme-red h-screen w-screen flex flex-col items-center justify-center p-4 relative overflow-hidden curse-shake";
-            sidebarCard.className = "w-64 flex flex-col rounded-3xl bg-black/80 border border-red-700/80 backdrop-blur-3xl p-4 overflow-hidden shadow-[0_0_30px_rgba(220,38,38,0.2)]";
-            chatCard.className = "flex-1 flex flex-col rounded-3xl bg-black/80 border border-red-700/80 backdrop-blur-3xl overflow-hidden shadow-[0_0_50px_rgba(220,38,38,0.3)]";
-            
-            headerPulse.className = "w-3 h-3 rounded-full bg-red-600 animate-ping";
-            headerTitle.innerText = "☠️ SYSTEM CURSED ☠️";
-            headerTitle.className = "text-red-600 font-mono tracking-widest uppercase font-extrabold text-center w-full animate-pulse";
-            
-            userInput.disabled = true;
-            sendBtn.disabled = true;
-            userInput.className = "flex-1 px-4 py-3 bg-black/60 border border-red-900/80 rounded-xl text-red-500 text-center font-mono outline-none";
-            sendBtn.className = "px-5 py-3 bg-red-950 border border-red-900 text-red-800/40 font-mono rounded-xl cursor-not-allowed";
-            
-            // Adjust sidebar buttons during curse
-            devilGambleBtn.disabled = true;
-            devilGambleBtn.className = "w-full mt-2 py-2.5 bg-black text-red-900/20 text-xs font-mono rounded-xl border border-red-950 cursor-not-allowed";
-            
-            document.getElementById('bot-welcome-msg').innerText = "💀 THE DEVIL ENJOYS YOUR SILENCE. REFRESHING WON'T SAVE YOU.";
-            musicBtn.innerText = "🔇 LOCKED BY CURSE";
-            musicBtn.disabled = true;
-            musicBtn.className = "w-full mt-4 py-2 bg-black text-red-900/40 text-xs font-mono rounded-xl border border-red-950 cursor-not-allowed";
-        }
+        const loadingId = 'load-' + Date.now();
+        chatBox.innerHTML += `<div id="${loadingId}" class="text-white/40 italic text-xs pl-2">Thinking...</div>`;
+        chatBox.scrollTop = chatBox.scrollHeight;
 
-        function revertToNormalStyles() {
-            bodyBg.className = "theme-blue h-screen w-screen flex flex-col items-center justify-center p-4 relative overflow-hidden";
-            sidebarCard.className = "w-64 flex flex-col rounded-3xl bg-white/5 border border-white/10 backdrop-blur-xl p-4 overflow-hidden";
-            chatCard.className = "flex-1 flex flex-col rounded-3xl bg-white/5 border border-white/10 backdrop-blur-xl shadow-2xl overflow-hidden";
-            headerPulse.className = "w-3 h-3 rounded-full bg-purple-400 animate-pulse";
-            headerTitle.innerText = "Aadhunik Manushya";
-            headerTitle.className = "text-white font-medium tracking-wide";
-            
-            userInput.disabled = false;
-            sendBtn.disabled = false;
-            userInput.placeholder = "Type a message...";
-            userInput.className = "flex-1 px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white outline-none focus:border-purple-500 transition-colors placeholder-white/30";
-            sendBtn.className = "px-5 py-3 bg-purple-600 hover:bg-purple-500 text-white font-medium rounded-xl transition-all shadow-lg shadow-purple-600/30";
-            
-            // Restore willing button styles
-            devilGambleBtn.disabled = false;
-            devilGambleBtn.className = "w-full mt-2 py-2.5 bg-red-950/40 hover:bg-red-900/40 border border-red-900/30 text-red-400 text-xs font-mono rounded-xl transition-all flex items-center justify-center gap-2 tracking-wider";
+        try {
+            const response = await fetch('/api/chat', { 
+                method: 'POST', 
+                headers: {'Content-Type': 'application/json'}, 
+                body: JSON.stringify({ message: text }) 
+            });
+            const data = await response.json();
+            const loader = document.getElementById(loadingId);
+            if (loader) loader.remove();
 
-            messageCount = 0;
-            musicBtn.disabled = false;
-            musicBtn.innerText = "🎵 Pause Music";
-            musicBtn.className = "w-full mt-4 py-2 bg-purple-600/20 hover:bg-purple-600/30 border border-purple-500/30 text-purple-300 text-xs font-medium rounded-xl transition-all flex items-center justify-center gap-2";
-            
-            document.getElementById('bot-welcome-msg').innerText = "Hello! Enter a prompt below to communicate with the model.";
-        }
-
-        function toggleMusic() {
-            if (sessionStorage.getItem('curse_end_timestamp')) return;
-            if (bgAudio.paused) {
-                bgAudio.play();
-                musicBtn.innerText = "🎵 Pause Music";
+            if (response.ok && data.response) {
+                chatBox.innerHTML += `<div class="bg-white/5 border border-white/5 p-3 rounded-2xl max-w-[85%] sm:max-w-[80%] text-white">${data.response}</div>`;
             } else {
-                bgAudio.pause();
-                musicBtn.innerText = "🔇 Play Music";
+                chatBox.innerHTML += `<div class="bg-red-500/10 border border-red-500/20 p-3 rounded-2xl max-w-[85%] text-red-400">Error: ${data.error}</div>`;
             }
+        } catch (err) {
+            const loader = document.getElementById(loadingId);
+            if (loader) loader.remove();
+            chatBox.innerHTML += `<div class="bg-red-500/10 border border-red-500/20 p-3 rounded-2xl max-w-[85%] text-red-400">Error connection refused.</div>`;
         }
+        chatBox.scrollTop = chatBox.scrollHeight;
+    }
 
-        function startNewChat() {
-            if (sessionStorage.getItem('curse_end_timestamp')) return;
-            chatBox.innerHTML = `<div class="bg-white/5 border border-white/5 p-3 rounded-2xl max-w-[80%] self-start">Hello! Enter a prompt below to communicate with the model.</div>`;
-        }
+    function toggleMusic() {
+        if (sessionStorage.getItem('curse_end_timestamp')) return;
+        if (bgAudio.paused) { bgAudio.play(); musicBtn.innerText = "🎵 Pause"; } else { bgAudio.pause(); musicBtn.innerText = "🔇 Play"; }
+    }
 
-        async function sendMessage() {
-            if (sessionStorage.getItem('curse_end_timestamp')) return;
-            const text = userInput.value.trim();
-            if (!text) return;
+    function startNewChat() {
+        if (sessionStorage.getItem('curse_end_timestamp')) return;
+        chatBox.innerHTML = `<div class="bg-white/5 border border-white/5 p-3 rounded-2xl max-w-[85%] sm:max-w-[80%] self-start">Workspace active. Enter a prompt to communicate.</div>`;
+    }
 
-            if (chatBox.children.length === 1) {
-                historyList.innerHTML = `<div class="w-full px-3 py-2 text-left text-xs text-white/90 bg-purple-600/20 border border-purple-500/20 rounded-xl cursor-pointer truncate">💬 ${text}</div>` + historyList.innerHTML;
-            }
+    function bypassPrankLimit() {
+        if (sessionStorage.getItem('curse_end_timestamp')) return;
+        messageCount = 0;
+        revertToNormalStyles();
+        prankModal.classList.add('hidden');
+        bgAudio.play();
+    }
 
-            messageCount++;
-            chatBox.innerHTML += `<div class="bg-purple-600/30 border border-purple-500/30 p-3 rounded-2xl max-w-[80%] ml-auto text-right">${text}</div>`;
-            userInput.value = '';
-            chatBox.scrollTop = chatBox.scrollHeight;
-
-            if (sessionStorage.getItem('dont_bother_granted') === 'true') {
-                // Unlimited message path unlocked
-            } else if (messageCount >= MAX_FREE_MESSAGES) {
-                userInput.disabled = true;
-                sendBtn.disabled = true;
-                userInput.placeholder = "Subscription required...";
-
-                setTimeout(() => {
-                    bgAudio.pause();
-                    prankAudio.play();
-                    prankModal.classList.remove('hidden');
-                }, 1200);
-                return;
-            }
-
-            const loadingId = 'load-' + Date.now();
-            chatBox.innerHTML += `<div id="${loadingId}" class="text-white/40 italic">Thinking...</div>`;
-
-            try {
-                const response = await fetch('/api/chat', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ message: text })
-                });
-                const data = await response.json();
-                document.getElementById(loadingId).remove();
-                chatBox.innerHTML += `<div class="bg-white/5 border border-white/5 p-3 rounded-2xl max-w-[80%]">${data.response}</div>`;
-            } catch {
-                document.getElementById(loadingId).innerText = "Error reaching host application.";
-            }
-            chatBox.scrollTop = chatBox.scrollHeight;
-        }
-
-        function bypassPrankLimit() {
-            if (sessionStorage.getItem('curse_end_timestamp')) return;
-            messageCount = 0;
-            userInput.disabled = false;
-            sendBtn.disabled = false;
-            userInput.placeholder = "Type a message...";
-            prankModal.classList.add('hidden');
-            bgAudio.play();
-        }
-
-        userInput.addEventListener('keydown', (e) => { 
-            if(e.key === 'Enter' && !userInput.disabled) sendMessage(); 
-        });
-    </script>
-</body>
-</html>
+    userInput.addEventListener('keydown', (e) => { if(e.key === 'Enter' && !userInput.disabled) sendMessage(); });
+</script>
