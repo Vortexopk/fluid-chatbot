@@ -21,9 +21,9 @@
         @keyframes shake { 10%, 90% { transform: translate3d(-1px, 0, 0); } 20%, 80% { transform: translate3d(2px, 0, 0); } 30%, 50%, 70% { transform: translate3d(-4px, 0, 0); } 40%, 60% { transform: translate3d(4px, 0, 0); } }
     </style>
 </head>
-<body id="body-bg" class="theme-blue min-h-screen w-screen flex flex-col items-center justify-center p-2 sm:p-4 relative overflow-x-hidden">
+<body id="body-bg" class="theme-blue h-screen w-screen flex flex-col items-center justify-center p-4 relative overflow-hidden">
 
-    <!-- AUDIO CHANNELS -->
+    <!-- AUDIO ELEMENTS -->
     <audio id="bg-audio" loop src="/static/bg-music.mp3"></audio>
     <audio id="prank-audio" src="/static/prank-alert.mp3"></audio>
     <audio id="hell-audio" loop src="/static/hell-music.mp3"></audio>
@@ -32,143 +32,101 @@
     <audio id="win-streak-audio" src="/static/win-streak.mp3"></audio>
     <audio id="loss-streak-audio" src="/static/loss-streak.mp3"></audio>
 
-    <!-- INITIAL ACCOUNT ENTRY ENGINE -->
-    <div id="auth-screen" class="w-full max-w-md p-6 sm:p-8 rounded-3xl bg-white/5 border border-white/10 backdrop-blur-xl shadow-2xl flex flex-col items-center z-40 my-auto max-h-[95vh] overflow-y-auto">
-        <div class="w-12 h-12 rounded-full bg-purple-500/20 text-purple-400 flex items-center justify-center text-xl font-bold mb-3">🚀</div>
+    <!-- INITIAL ACCOUNT PORTAL -->
+    <div id="auth-screen" class="w-full max-w-sm p-8 rounded-3xl bg-white/5 border border-white/10 backdrop-blur-xl shadow-2xl flex flex-col items-center z-40">
+        <div class="w-12 h-12 rounded-full bg-purple-500/20 text-purple-400 flex items-center justify-center text-xl font-bold mb-4">🚀</div>
         <h2 class="text-white text-xl font-bold mb-1">Aadhunik Manushya</h2>
-        <p class="text-white/60 text-xs mb-4 text-center">Register or Login to connect to the global database</p>
+        <p class="text-white/60 text-xs mb-6 text-center">Register or Sign in to link your streak to the global database</p>
         
-        <div class="w-full space-y-2.5 mb-4">
+        <div class="w-full space-y-3 mb-4">
             <input id="login-user" type="text" placeholder="Username" class="w-full px-4 py-2.5 bg-white/5 border border-white/10 rounded-xl text-white text-sm outline-none focus:border-purple-500 transition-colors placeholder-white/20">
             <input id="login-pass" type="password" placeholder="Password" class="w-full px-4 py-2.5 bg-white/5 border border-white/10 rounded-xl text-white text-sm outline-none focus:border-purple-500 transition-colors placeholder-white/20">
         </div>
 
-        <div class="w-full flex gap-2 mb-3">
-            <button onclick="handleDbAuth('login')" class="flex-1 py-2.5 bg-purple-600 hover:bg-purple-500 text-white text-sm font-medium rounded-xl transition-all shadow-lg shadow-purple-600/20">Sign In</button>
+        <div class="w-full flex gap-2 mb-4">
+            <button onclick="handleDbAuth('login')" class="flex-1 py-2.5 bg-purple-600 hover:bg-purple-500 text-white text-sm font-medium rounded-xl transition-all">Sign In</button>
             <button onclick="handleDbAuth('register')" class="flex-1 py-2.5 bg-white/10 hover:bg-white/20 text-white text-sm font-medium rounded-xl border border-white/10 transition-all">Register</button>
         </div>
-
-        <!-- SKIP OPTION ELEMENT -->
-        <button onclick="handleSkipAuth()" class="w-full py-2 mb-4 bg-white/5 hover:bg-white/10 text-white/50 hover:text-white/80 text-xs font-medium rounded-xl border border-white/5 transition-colors">
-            Skip & Play as Guest
-        </button>
-
-        <!-- PRE-LOGIN LEADERBOARD MODULE -->
-        <div class="w-full border-t border-white/10 pt-3">
-            <div class="text-yellow-400 text-[10px] font-bold tracking-wider uppercase mb-2 text-center">🏆 Global Leaders Highscores</div>
-            <div id="auth-leaderboard-container" class="space-y-1.5 max-h-[150px] overflow-y-auto text-[11px] font-mono w-full">
-                <!-- Data populated dynamically via backend fetch -->
-            </div>
-        </div>
     </div>
 
-    <!-- MAIN INTERFACE APPLICATION CONTAINER -->
-    <div id="main-app" class="hidden w-full max-w-5xl h-[90vh] sm:h-[85vh] flex flex-col md:flex-row gap-3 sm:gap-4 items-stretch z-30 transition-all duration-300">
-        
-        <!-- SIDEBAR AND RUNTIME LEADERBOARD PANELS -->
-        <div id="sidebar-card" class="w-full md:w-64 flex flex-col rounded-2xl sm:rounded-3xl bg-white/5 border border-white/10 backdrop-blur-xl p-3 sm:p-4 overflow-hidden transition-all duration-500 max-h-[220px] md:max-h-none">
-            <div class="flex md:flex-col gap-2 w-full items-center md:items-stretch">
-                <button onclick="startNewChat()" class="flex-1 md:w-full py-2 bg-white/10 hover:bg-white/15 text-white text-xs sm:text-sm font-medium rounded-xl border border-white/10 transition-all flex items-center justify-center gap-2"><span>+</span> New Chat</button>
-                <button onclick="toggleMobileSidebar()" class="md:hidden px-3 py-2 bg-white/5 border border-white/10 text-white text-xs rounded-xl">View Stats</button>
-            </div>
+    <!-- MAIN SYSTEM WORKSPACE -->
+    <div id="main-app" class="hidden w-full max-w-5xl h-[85vh] flex gap-4 items-stretch z-30">
+        <!-- SIDEBAR PANEL -->
+        <div id="sidebar-card" class="w-64 flex flex-col rounded-3xl bg-white/5 border border-white/10 backdrop-blur-xl p-4 overflow-hidden transition-all duration-500">
+            <button onclick="startNewChat()" class="w-full py-2.5 mb-3 bg-white/10 hover:bg-white/15 text-white text-sm font-medium rounded-xl border border-white/10 transition-all flex items-center justify-center gap-2"><span>+</span> New Chat</button>
             
-            <div id="sidebar-expanded-content" class="hidden md:flex flex-col flex-1 mt-3 overflow-hidden">
-                <div class="text-white/40 text-[9px] font-bold tracking-wider uppercase mb-1 px-1">Recent Chats</div>
-                <div id="history-list" class="flex-1 overflow-y-auto space-y-1.5 pr-1 max-h-[60px] md:max-h-[100px] mb-2 text-xs text-white/70">
-                    <div class="w-full px-2 py-1.5 text-left bg-white/5 border border-white/5 rounded-lg truncate">💬 Connected Engine</div>
-                </div>
+            <div class="text-white/40 text-[10px] font-bold tracking-wider uppercase mb-1 px-2">Recent Chats</div>
+            <div id="history-list" class="flex-1 overflow-y-auto space-y-2 pr-1 max-h-[120px] mb-3">
+                <div class="w-full px-3 py-2 text-left text-xs text-white/70 bg-white/5 border border-white/5 rounded-xl cursor-pointer">💬 Connected Mainframe</div>
+            </div>
 
-                <!-- MAIN WORKSPACE LEADERBOARD DISPLAY -->
-                <div class="border-t border-white/10 pt-2 mb-2 flex-1 flex flex-col min-h-[100px] md:min-h-[130px]">
-                    <div class="text-yellow-400 text-[9px] font-bold tracking-wider uppercase mb-1 px-1 flex justify-between items-center">
-                        <span>🏆 Global Rankings</span>
-                        <span onclick="fetchLeaderboard()" class="cursor-pointer hover:text-white transition-colors">🔄</span>
-                    </div>
-                    <div id="app-leaderboard-container" class="space-y-1.5 flex-1 overflow-y-auto text-[10px] font-mono">
-                        <!-- Streamed scores -->
-                    </div>
+            <!-- DYNAMIC GLOBAL LEADERBOARD CARD -->
+            <div class="border-t border-white/10 pt-3 mb-2 flex-1 flex flex-col min-h-[160px]">
+                <div class="text-yellow-400 text-[10px] font-bold tracking-wider uppercase mb-2 px-2 flex justify-between">
+                    <span>🏆 Global Leaders</span>
+                    <span onclick="fetchLeaderboard()" class="cursor-pointer hover:text-white transition-colors">🔄</span>
+                </div>
+                <div id="leaderboard-container" class="space-y-1.5 flex-1 overflow-y-auto text-[11px] font-mono px-1">
+                    <!-- Loaded dynamically via database -->
                 </div>
             </div>
 
-            <!-- INTERACTION COMMAND OPTIONS -->
-            <div class="hidden md:grid grid-cols-2 md:grid-cols-1 gap-1.5 pt-2 border-t border-white/10" id="sidebar-action-wrapper">
-                <button id="devil-gamble-btn" onclick="startDevilGame()" class="w-full py-2 bg-red-950/40 hover:bg-red-900/40 border border-red-900/30 text-red-400 text-[11px] font-mono rounded-xl transition-all">👹 Wager Game</button>
-                <button id="devil-ttt-btn" onclick="startTicTacToeGame()" class="w-full py-2 bg-red-950/40 hover:bg-red-900/40 border border-red-900/30 text-red-400 text-[11px] font-mono rounded-xl transition-all">❌ Cross&Zero</button>
-            </div>
-            <button onclick="toggleMusic()" id="music-btn" class="w-full mt-2 py-1.5 bg-purple-600/20 hover:bg-purple-600/30 border border-purple-500/30 text-purple-300 text-xs font-medium rounded-xl transition-all">🎵 Music</button>
+            <button id="devil-gamble-btn" onclick="startDevilGame()" class="w-full py-2 bg-red-950/40 hover:bg-red-900/40 border border-red-900/30 text-red-400 text-xs font-mono rounded-xl transition-all flex items-center justify-center gap-2 tracking-wider">👹 Deal with Devil</button>
+            <button onclick="toggleMusic()" id="music-btn" class="w-full mt-2 py-2 bg-purple-600/20 hover:bg-purple-600/30 border border-purple-500/30 text-purple-300 text-xs font-medium rounded-xl transition-all flex items-center justify-center gap-2">🎵 Pause Music</button>
         </div>
 
-        <!-- CORE CHAT CORE DISPLAY WINDOW -->
-        <div id="chat-card" class="flex-1 flex flex-col rounded-2xl sm:rounded-3xl bg-white/5 border border-white/10 backdrop-blur-xl shadow-2xl overflow-hidden transition-all duration-500">
-            <div class="px-4 sm:px-6 py-3 border-b border-white/10 bg-white/5 flex items-center justify-between">
-                <div class="flex items-center gap-2.5 min-w-0">
-                    <div id="header-pulse" class="w-2.5 h-2.5 rounded-full bg-purple-400 animate-pulse flex-shrink-0"></div>
-                    <h1 id="header-title" class="text-white font-medium text-sm sm:text-base tracking-wide truncate">Aadhunik Manushya</h1>
+        <!-- CHAT SCREEN WINDOW -->
+        <div id="chat-card" class="flex-1 flex flex-col rounded-3xl bg-white/5 border border-white/10 backdrop-blur-xl shadow-2xl overflow-hidden transition-all duration-500">
+            <div class="px-6 py-4 border-b border-white/10 bg-white/5 flex items-center justify-between">
+                <div class="flex items-center gap-3">
+                    <div id="header-pulse" class="w-3 h-3 rounded-full bg-purple-400 animate-pulse"></div>
+                    <h1 id="header-title" class="text-white font-medium tracking-wide">Aadhunik Manushya</h1>
                 </div>
-                <span id="user-profile-badge" class="text-white/40 font-mono text-[10px] sm:text-xs bg-white/5 px-2 py-0.5 rounded-lg border border-white/5 truncate max-w-[100px]">Mortal</span>
+                <span id="user-profile-badge" class="text-white/40 font-mono text-xs bg-white/5 px-2.5 py-1 rounded-lg border border-white/5">Mortal</span>
             </div>
-            <div id="chat-box" class="flex-1 p-4 sm:p-6 overflow-y-auto space-y-3 sm:space-y-4 text-xs sm:text-sm text-white/90">
-                <div id="bot-welcome-msg" class="bg-white/5 border border-white/5 p-3 rounded-2xl max-w-[85%] sm:max-w-[80%] self-start">Workspace active. Enter a prompt to communicate.</div>
+            <div id="chat-box" class="flex-1 p-6 overflow-y-auto space-y-4 text-sm text-white/90">
+                <div id="bot-welcome-msg" class="bg-white/5 border border-white/5 p-3 rounded-2xl max-w-[80%] self-start">Profile active. Enter a prompt to communicate.</div>
             </div>
-            <div class="p-3 sm:p-4 bg-white/5 border-t border-white/10 flex gap-2">
-                <input id="user-input" type="text" placeholder="Type a message..." class="flex-1 px-3 sm:px-4 py-2.5 sm:py-3 bg-white/5 border border-white/10 rounded-xl text-white outline-none focus:border-purple-500 text-xs sm:text-sm transition-colors">
-                <button id="send-btn" onclick="sendMessage()" class="px-4 sm:px-5 py-2.5 sm:py-3 bg-purple-600 hover:bg-purple-500 text-white font-medium text-xs sm:text-sm rounded-xl transition-all shadow-lg shadow-purple-600/30">Send</button>
+            <div class="p-4 bg-white/5 border-t border-white/10 flex gap-2">
+                <input id="user-input" type="text" placeholder="Type a message..." class="flex-1 px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white outline-none focus:border-purple-500 transition-colors placeholder-white/30">
+                <button id="send-btn" onclick="sendMessage()" class="px-5 py-3 bg-purple-600 hover:bg-purple-500 text-white font-medium rounded-xl transition-all shadow-lg shadow-purple-600/30">Send</button>
             </div>
         </div>
     </div>
 
-    <!-- PRANK OVERLAY BLOCK DIALOG -->
-    <div id="prank-modal" class="hidden absolute inset-0 bg-black/70 backdrop-blur-md flex items-center justify-center p-4 z-50">
-        <div class="bg-slate-900/90 border border-white/10 p-6 sm:p-8 rounded-3xl max-w-sm w-full text-center shadow-2xl flex flex-col items-center">
-            <div class="w-11 h-11 rounded-full bg-purple-500/20 text-purple-400 flex items-center justify-center text-xl font-bold mb-3">🔮</div>
-            <h2 class="text-white text-lg sm:text-xl font-bold mb-1 tracking-wide">AAKASH VANI</h2>
-            <p class="text-white/60 text-xs mb-4">Free trial expired! Upgrade to premium or settle it with a challenge game.</p>
-            <div class="w-40 h-40 bg-white p-2 rounded-2xl shadow-inner mb-4 flex items-center justify-center border-4 border-purple-500">
+    <!-- PRANK PAYWALL MODAL -->
+    <div id="prank-modal" class="hidden absolute inset-0 bg-black/60 backdrop-blur-md flex items-center justify-center p-4 z-50">
+        <div class="bg-slate-900/90 border border-white/10 p-8 rounded-3xl max-w-sm w-full text-center shadow-2xl flex flex-col items-center">
+            <div class="w-12 h-12 rounded-full bg-purple-500/20 text-purple-400 flex items-center justify-center text-xl font-bold mb-4">🔮</div>
+            <h2 class="text-white text-xl font-bold mb-2 tracking-wide">AAKASH VANI</h2>
+            <p class="text-white/60 text-sm mb-6">Free trial expired! Upgrade to premium for an uninterrupted experience with <strong>Aadhunik Manushya</strong>.</p>
+            <div class="w-48 h-48 bg-white p-2 rounded-2xl shadow-inner mb-6 flex items-center justify-center border-4 border-purple-500">
                 <img src="/static/qr.png" alt="UPI QR" class="w-full h-full object-contain rounded-xl">
             </div>
-            <button onclick="startDevilGame()" class="w-full py-2 mb-1.5 bg-red-950/40 hover:bg-red-900/60 border border-red-800/50 text-red-400 text-xs font-semibold rounded-xl tracking-wide">Wager Game</button>
-            <button onclick="startTicTacToeGame()" class="w-full py-2 mb-2 bg-red-950/40 hover:bg-red-900/60 border border-red-800/50 text-red-400 text-xs font-semibold rounded-xl tracking-wide">Cross & Zero</button>
-            <button onclick="bypassPrankLimit()" class="w-full py-1.5 text-white/20 hover:text-white/50 text-[10px] font-mono transition-all uppercase">sybau</button>
+            <p class="text-purple-400 font-mono text-xs animate-pulse tracking-wider mb-4">⚡ AUTOMATIC ACTIVATION ONCE PAID ⚡</p>
+            <button onclick="startDevilGame()" class="w-full py-2 mb-2 bg-red-950/40 hover:bg-red-900/60 border border-red-800/50 text-red-400 text-xs font-semibold rounded-xl transition-all tracking-wide">Don't bother me again</button>
+            <button onclick="bypassPrankLimit()" class="w-full py-1.5 text-white/20 hover:text-white/50 text-[10px] font-mono transition-all tracking-widest uppercase">sybau</button>
         </div>
     </div>
 
-    <!-- GUESS GAME LAYOUT OVERLAY -->
+    <!-- MINI DEVIL GAME OVERLAY INTERFACE -->
     <div id="game-modal" class="hidden absolute inset-0 bg-black/95 backdrop-blur-lg flex items-center justify-center p-4 z-50">
-        <div class="bg-red-950/20 border border-red-900/50 p-6 sm:p-8 rounded-3xl max-w-sm w-full text-center shadow-2xl flex flex-col items-center">
-            <div class="text-2xl mb-1 animate-bounce">👹</div>
-            <h2 class="text-red-500 text-lg font-mono font-bold tracking-widest uppercase mb-1">DEVIL'S WAGER</h2>
-            <p class="text-white/70 text-[11px] font-mono mb-3">Guess the number from <strong class="text-red-400">1 to 10</strong>.</p>
-            <div class="w-full flex justify-between px-2 text-[10px] font-mono mb-3">
-                <span class="text-green-400">🔥 Win: <span id="ui-win-streak">0x</span></span>
-                <span class="text-red-400">💀 Loss: <span id="ui-loss-streak">0x</span></span>
-            </div>
-            <div class="text-red-400 text-xs font-mono mb-3">🖤 Lives: <span id="game-lives" class="font-bold text-red-500">3</span></div>
-            <div class="w-full flex gap-2 mb-3">
-                <input id="game-guess" type="number" min="1" max="10" placeholder="1-10" class="w-full px-3 py-2 bg-black/40 border border-red-900/50 rounded-xl text-red-400 text-center font-mono text-sm outline-none">
-                <button onclick="submitDevilGuess()" class="px-4 bg-red-700 hover:bg-red-600 text-white font-mono text-xs font-bold rounded-xl">GUESS</button>
-            </div>
-            <p id="game-feedback" class="text-red-400/60 font-mono text-[10px] min-h-[14px]"></p>
-        </div>
-    </div>
-
-    <!-- TIC TAC TOE COMPONENT WINDOW -->
-    <div id="ttt-modal" class="hidden absolute inset-0 bg-black/95 backdrop-blur-lg flex items-center justify-center p-4 z-50">
-        <div class="bg-red-950/20 border border-red-900/50 p-5 rounded-3xl max-w-sm w-full text-center shadow-2xl flex flex-col items-center">
-            <div class="text-2xl mb-1">❌👹⭕</div>
-            <h2 class="text-red-500 text-base font-mono font-bold tracking-widest uppercase mb-3">CROSS & ZERO</h2>
+        <div class="bg-red-950/20 border border-red-900/50 p-8 rounded-3xl max-w-sm w-full text-center shadow-2xl flex flex-col items-center">
+            <div class="text-3xl mb-2 animate-bounce">👹</div>
+            <h2 class="text-red-500 text-xl font-mono font-bold tracking-widest uppercase mb-2">DEVIL'S WAGER</h2>
+            <p id="game-instruction" class="text-white/70 text-xs font-mono mb-6">I am thinking of a number from <strong class="text-red-400">1 to 10</strong>. Guess correctly to break the loop.</p>
             
-            <div class="grid grid-cols-3 gap-2 w-56 h-56 sm:w-64 sm:h-64 mb-4">
-                <button data-index="0" onclick="makePlayerMove(0)" class="ttt-cell h-full w-full bg-black/60 border border-red-900/40 rounded-xl text-xl font-mono font-bold text-white hover:bg-red-950/30 transition-colors flex items-center justify-center"></button>
-                <button data-index="1" onclick="makePlayerMove(1)" class="ttt-cell h-full w-full bg-black/60 border border-red-900/40 rounded-xl text-xl font-mono font-bold text-white hover:bg-red-950/30 transition-colors flex items-center justify-center"></button>
-                <button data-index="2" onclick="makePlayerMove(2)" class="ttt-cell h-full w-full bg-black/60 border border-red-900/40 rounded-xl text-xl font-mono font-bold text-white hover:bg-red-950/30 transition-colors flex items-center justify-center"></button>
-                <button data-index="3" onclick="makePlayerMove(3)" class="ttt-cell h-full w-full bg-black/60 border border-red-900/40 rounded-xl text-xl font-mono font-bold text-white hover:bg-red-950/30 transition-colors flex items-center justify-center"></button>
-                <button data-index="4" onclick="makePlayerMove(4)" class="ttt-cell h-full w-full bg-black/60 border border-red-900/40 rounded-xl text-xl font-mono font-bold text-white hover:bg-red-950/30 transition-colors flex items-center justify-center"></button>
-                <button data-index="5" onclick="makePlayerMove(5)" class="ttt-cell h-full w-full bg-black/60 border border-red-900/40 rounded-xl text-xl font-mono font-bold text-white hover:bg-red-950/30 transition-colors flex items-center justify-center"></button>
-                <button data-index="6" onclick="makePlayerMove(6)" class="ttt-cell h-full w-full bg-black/60 border border-red-900/40 rounded-xl text-xl font-mono font-bold text-white hover:bg-red-950/30 transition-colors flex items-center justify-center"></button>
-                <button data-index="7" onclick="makePlayerMove(7)" class="ttt-cell h-full w-full bg-black/60 border border-red-900/40 rounded-xl text-xl font-mono font-bold text-white hover:bg-red-950/30 transition-colors flex items-center justify-center"></button>
-                <button data-index="8" onclick="makePlayerMove(8)" class="ttt-cell h-full w-full bg-black/60 border border-red-900/40 rounded-xl text-xl font-mono font-bold text-white hover:bg-red-950/30 transition-colors flex items-center justify-center"></button>
+            <div class="w-full flex justify-between px-2 text-xs font-mono mb-4">
+                <span class="text-green-400">🔥 Win Streak: <span id="ui-win-streak">0x</span></span>
+                <span class="text-red-400">💀 Loss Streak: <span id="ui-loss-streak">0x</span></span>
             </div>
-            <p id="ttt-feedback" class="text-red-400 text-xs font-mono min-h-[16px]">Your Turn. You are X.</p>
+            <div class="text-red-400 text-sm font-mono mb-4">🖤 Lives Left: <span id="game-lives" class="font-bold text-red-500">3</span></div>
+            
+            <div class="w-full flex gap-2 mb-4">
+                <input id="game-guess" type="number" min="1" max="10" placeholder="1-10" class="w-full px-4 py-2.5 bg-black/40 border border-red-900/50 rounded-xl text-red-400 text-center font-mono outline-none focus:border-red-600 transition-colors">
+                <button onclick="submitDevilGuess()" class="px-5 bg-red-700 hover:bg-red-600 text-white font-mono text-sm font-bold rounded-xl transition-all">GUESS</button>
+            </div>
+            <p id="game-feedback" class="text-red-400/60 font-mono text-xs min-h-[16px] animate-pulse"></p>
         </div>
     </div>
 
@@ -180,8 +138,9 @@
         const sendBtn = document.getElementById('send-btn');
         const prankModal = document.getElementById('prank-modal');
         const gameModal = document.getElementById('game-modal');
-        const tttModal = document.getElementById('ttt-modal');
+        const historyList = document.getElementById('history-list');
         const bgAudio = document.getElementById('bg-audio');
+        const prankAudio = document.getElementById('prank-audio');
         const hellAudio = document.getElementById('hell-audio');
         const winAudio = document.getElementById('game-win-audio');
         const loseAudio = document.getElementById('game-lose-audio');
@@ -191,235 +150,229 @@
         const bodyBg = document.getElementById('body-bg');
         const sidebarCard = document.getElementById('sidebar-card');
         const chatCard = document.getElementById('chat-card');
+        const headerPulse = document.getElementById('header-pulse');
         const headerTitle = document.getElementById('header-title');
         const devilGambleBtn = document.getElementById('devil-gamble-btn');
-        const devilTttBtn = document.getElementById('devil-ttt-btn');
 
-        let activeUser = "Guest", messageCount = 0;
+        let activeUser = null;
+        let messageCount = 0;
         const MAX_FREE_MESSAGES = 3;
         let secretNumber = 0, livesLeft = 3, curseTimerInterval = null;
-        let tttBoard = ["", "", "", "", "", "", "", "", ""], isTttActive = false;
 
-        bgAudio.volume = 0.2; hellAudio.volume = 0.25; winAudio.volume = 0.5; loseAudio.volume = 0.6;
-        if(winStreakAudio) winStreakAudio.volume = 0.6; if(lossStreakAudio) lossStreakAudio.volume = 0.6;
+        bgAudio.volume = 0.2; prankAudio.volume = 0.6; hellAudio.volume = 0.25;
+        winAudio.volume = 0.5; loseAudio.volume = 0.6; winStreakAudio.volume = 0.6; lossStreakAudio.volume = 0.6;
 
-        window.addEventListener('DOMContentLoaded', () => {
-            fetchLeaderboard(); 
-            const curseEndTime = sessionStorage.getItem('curse_end_timestamp');
-            const now = Date.now();
-            if (curseEndTime && parseInt(curseEndTime) > now) {
-                authScreen.classList.add('hidden'); mainApp.classList.remove('hidden');
-                window.addEventListener('click', () => { 
-                    applyCursedState(); startCurseCountdown(Math.ceil((parseInt(curseEndTime) - now) / 1000));
-                }, { once: true });
-            }
-        });
-
+        // --- CONNECT DATABASE ACCOUNT VIA ENDPOINTS ---
         async function handleDbAuth(actionType) {
             const username = document.getElementById('login-user').value.trim();
             const password = document.getElementById('login-pass').value.trim();
-            if (!username || !password) return alert("Credentials incomplete.");
-            const response = await fetch('/api/auth', { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({ username, password, action: actionType }) });
+
+            if (!username || !password) {
+                alert("Credentials incomplete."); return;
+            }
+
+            const response = await fetch('/api/auth', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({ username, password, action: actionType })
+            });
             const resData = await response.json();
-            if (!response.ok) return alert(resData.error || "Authentication error.");
-            if (actionType === 'register') return alert("Account forged! Click Sign In.");
+
+            if (!response.ok) {
+                alert(resData.error || "Authentication error."); return;
+            }
+
+            if (actionType === 'register') {
+                alert("Account forged in database! Click Sign In to execute profile session."); return;
+            }
+
+            // Successfully Logged In
+            activeUser = resData.username;
+            document.getElementById('user-profile-badge').innerText = activeUser;
             
-            activeUser = resData.username; 
-            document.getElementById('user-profile-badge').innerText = activeUser;
-            launchApplicationWorkspace();
+            authScreen.classList.add('hidden');
+            mainApp.classList.remove('hidden');
+            
+            bgAudio.play();
+            fetchLeaderboard();
         }
 
-        function handleSkipAuth() {
-            activeUser = "Guest";
-            document.getElementById('user-profile-badge').innerText = activeUser;
-            launchApplicationWorkspace();
-        }
-
-        function launchApplicationWorkspace() {
-            authScreen.classList.add('hidden'); mainApp.classList.remove('hidden'); bgAudio.play(); fetchLeaderboard();
-        }
-
+        // --- FETCH LIVE MULTIPLAYER LEADERBOARD ---
         async function fetchLeaderboard() {
             try {
                 const response = await fetch('/api/leaderboard');
                 const board = await response.json();
-                
-                const authContainer = document.getElementById('auth-leaderboard-container');
-                const appContainer = document.getElementById('app-leaderboard-container');
-                
-                let boardHtml = "";
-                board.forEach((player, idx) => {
-                    boardHtml += `<div class="flex justify-between items-center text-white/60 bg-white/5 p-1 px-2 rounded-lg border border-white/5"><span>${idx === 0 ? "👑 " : "💀 "}${player.username}</span><span class="text-green-400 font-bold">${player.streak}x</span></div>`;
-                });
-                
-                if (authContainer) authContainer.innerHTML = boardHtml || "<div class='text-white/30 text-center py-2'>No records recorded</div>";
-                if (appContainer) appContainer.innerHTML = boardHtml || "<div class='text-white/30 text-center py-2'>No records</div>";
-            } catch (e) { console.error(e); }
-        }
+                const container = document.getElementById('leaderboard-container');
+                container.innerHTML = "";
 
-        function toggleMobileSidebar() {
-            const wrapper = document.getElementById('sidebar-expanded-content');
-            const actions = document.getElementById('sidebar-action-wrapper');
-            const card = document.getElementById('sidebar-card');
-            if(wrapper.classList.contains('hidden')) {
-                wrapper.classList.remove('hidden'); actions.classList.remove('hidden'); actions.classList.add('grid');
-                card.classList.remove('max-h-[220px]'); card.classList.add('max-h-none');
-            } else {
-                wrapper.classList.add('hidden'); actions.classList.remove('grid'); actions.classList.add('hidden');
-                card.classList.add('max-h-[220px]'); card.classList.remove('max-h-none');
-            }
+                board.forEach((player, idx) => {
+                    const crowns = idx === 0 ? "👑 " : "💀 ";
+                    container.innerHTML += `
+                        <div class="flex justify-between items-center text-white/60 bg-white/5 p-1 px-2 rounded-lg border border-white/5">
+                            <span>${crowns}${player.username}</span>
+                            <span class="text-green-400 font-bold">${player.streak}x</span>
+                        </div>
+                    `;
+                });
+            } catch (e) { console.error("Error loading highscores", e); }
         }
 
         function startDevilGame() {
             if (sessionStorage.getItem('curse_end_timestamp')) return;
-            bgAudio.pause(); hellAudio.play();
-            secretNumber = Math.floor(Math.random() * 10) + 1; livesLeft = 3;
+            prankAudio.pause(); bgAudio.pause(); hellAudio.play();
+
+            secretNumber = Math.floor(Math.random() * 10) + 1;
+            livesLeft = 3;
             document.getElementById('game-lives').innerText = livesLeft;
+            document.getElementById('game-feedback').innerText = "";
+            document.getElementById('game-guess').value = "";
+
             document.getElementById('ui-win-streak').innerText = (sessionStorage.getItem('w_streak') || "0") + "x";
             document.getElementById('ui-loss-streak').innerText = (sessionStorage.getItem('l_streak') || "0") + "x";
-            prankModal.classList.add('hidden'); gameModal.classList.remove('hidden');
+
+            prankModal.classList.add('hidden');
+            gameModal.classList.remove('hidden');
         }
 
-        async function handleGameResolution(outcome) {
-            if (outcome === 'win') {
+        async function submitDevilGuess() {
+            const guessInput = document.getElementById('game-guess');
+            const feedbackText = document.getElementById('game-feedback');
+            const userGuess = parseInt(guessInput.value);
+
+            if (isNaN(userGuess) || userGuess < 1 || userGuess > 10) {
+                feedbackText.innerText = "Pick a number between 1 and 10."; return;
+            }
+
+            if (userGuess === secretNumber) {
+                gameModal.classList.add('hidden');
+                hellAudio.pause();
+
                 let wStreak = parseInt(sessionStorage.getItem('w_streak') || "0") + 1;
-                sessionStorage.setItem('w_streak', wStreak.toString()); sessionStorage.removeItem('l_streak');
-                if (wStreak >= 2 && winStreakAudio) winStreakAudio.play(); else winAudio.play();
-                
-                if(activeUser !== "Guest") {
-                    await fetch('/api/leaderboard/update', { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({ username: activeUser, streak: wStreak }) });
-                }
-                bgAudio.play(); sessionStorage.setItem('dont_bother_granted', 'true'); revertToNormalStyles(); fetchLeaderboard();
+                sessionStorage.setItem('w_streak', wStreak.toString());
+                sessionStorage.removeItem('l_streak'); 
+
+                if (wStreak >= 2) winStreakAudio.play(); else winAudio.play();
+
+                // Save new Win Streak directly into the Database!
+                await fetch('/api/leaderboard/update', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({ username: activeUser, streak: wStreak })
+                });
+
+                bgAudio.play();
+                sessionStorage.setItem('dont_bother_granted', 'true');
+                revertToNormalStyles();
+                fetchLeaderboard(); // Update sidebar live
+
                 alert(`👹: "you won bcz i let you win. (Win Streak: ${wStreak}x)"`);
-            } else {
+                return;
+            }
+
+            livesLeft--;
+            document.getElementById('game-lives').innerText = livesLeft;
+
+            if (livesLeft <= 0) {
+                gameModal.classList.add('hidden');
+                hellAudio.pause();
+
                 let lStreak = parseInt(sessionStorage.getItem('l_streak') || "0") + 1;
-                sessionStorage.setItem('l_streak', lStreak.toString()); sessionStorage.removeItem('w_streak'); sessionStorage.removeItem('dont_bother_granted');
-                if (lStreak >= 2 && lossStreakAudio) lossStreakAudio.play(); else loseAudio.play();
+                sessionStorage.setItem('l_streak', lStreak.toString());
+                sessionStorage.removeItem('w_streak'); 
+                sessionStorage.removeItem('dont_bother_granted');
+
+                if (lStreak >= 2) lossStreakAudio.play(); else loseAudio.play();
+
                 let finalTimeInSeconds = 9 * lStreak;
                 sessionStorage.setItem('curse_end_timestamp', (Date.now() + (finalTimeInSeconds * 1000)).toString());
-                applyCursedState(); startCurseCountdown(finalTimeInSeconds);
+
+                applyCursedState();
+                startCurseCountdown(finalTimeInSeconds);
+
                 alert(`👹: "playing with the devil was a great choice. (Loss Streak: ${lStreak}x)"`);
+                return;
             }
-        }
 
-        function submitDevilGuess() {
-            const userGuess = parseInt(document.getElementById('game-guess').value);
-            if (isNaN(userGuess) || userGuess < 1 || userGuess > 10) return;
-            if (userGuess === secretNumber) { gameModal.classList.add('hidden'); hellAudio.pause(); handleGameResolution('win'); return; }
-            livesLeft--; document.getElementById('game-lives').innerText = livesLeft;
-            if (livesLeft <= 0) { gameModal.classList.add('hidden'); hellAudio.pause(); handleGameResolution('loss'); return; }
-            document.getElementById('game-feedback').innerText = userGuess < secretNumber ? "Too low. Flames rise." : "Too high. Soul drifts.";
-        }
-
-        // --- DEVIL CROSS & ZERO CORE FUNCTIONALITY ---
-        function startTicTacToeGame() {
-            if (sessionStorage.getItem('curse_end_timestamp')) return;
-            bgAudio.pause(); hellAudio.play();
-            tttBoard = ["", "", "", "", "", "", "", "", ""]; isTttActive = true;
-            document.querySelectorAll('.ttt-cell').forEach(cell => cell.innerText = "");
-            document.getElementById('ttt-feedback').innerText = "Your turn. You are X.";
-            prankModal.classList.add('hidden'); tttModal.classList.remove('hidden');
-        }
-
-        function makePlayerMove(index) {
-            if (!isTttActive || tttBoard[index] !== "") return;
-            tttBoard[index] = "X"; document.querySelectorAll('.ttt-cell')[index].innerText = "X";
-            if (checkTttWinner("X")) { endTtt('win'); return; }
-            if (!tttBoard.includes("")) { endTtt('draw'); return; }
-            document.getElementById('ttt-feedback').innerText = "Devil calculating...";
-            setTimeout(makeDevilMove, 600);
-        }
-
-        function makeDevilMove() {
-            if (!isTttActive) return;
-            let bestScore = -Infinity; let move;
-            for (let i = 0; i < 9; i++) {
-                if (tttBoard[i] === "") {
-                    tttBoard[i] = "O"; let score = minimax(tttBoard, 0, false); tttBoard[i] = "";
-                    if (score > bestScore) { bestScore = score; move = i; }
-                }
-            }
-            tttBoard[move] = "O"; document.querySelectorAll('.ttt-cell')[move].innerText = "O";
-            if (checkTttWinner("O")) { endTtt('loss'); return; }
-            if (!tttBoard.includes("")) { endTtt('draw'); return; }
-            document.getElementById('ttt-feedback').innerText = "Your turn.";
-        }
-
-        function minimax(board, depth, isMaximizing) {
-            if (checkTttWinner("O")) return 10 - depth;
-            if (checkTttWinner("X")) return depth - 10;
-            if (!board.includes("")) return 0;
-            if (isMaximizing) {
-                let bestScore = -Infinity;
-                for (let i = 0; i < 9; i++) {
-                    if (board[i] === "") { board[i] = "O"; let score = minimax(board, depth + 1, false); board[i] = ""; bestScore = Math.max(score, bestScore); }
-                }
-                return bestScore;
-            } else {
-                let bestScore = Infinity;
-                for (let i = 0; i < 9; i++) {
-                    if (board[i] === "") { board[i] = "X"; let score = minimax(board, depth + 1, true); board[i] = ""; bestScore = Math.min(score, bestScore); }
-                }
-                return bestScore;
-            }
-        }
-
-        function checkTttWinner(p) {
-            const winPatterns = [[0,1,2],[3,4,5],[6,7,8],[0,3,6],[1,4,7],[2,5,8],[0,4,8],[2,4,6]];
-            return winPatterns.some(pattern => pattern.every(idx => tttBoard[idx] === p));
-        }
-
-        function endTtt(result) {
-            isTttActive = false; tttModal.classList.add('hidden'); hellAudio.pause();
-            if (result === 'win') handleGameResolution('win');
-            else if (result === 'draw') { bgAudio.play(); revertToNormalStyles(); alert("👹: 'A draw? Impressive resilience mortal.'"); }
-            else handleGameResolution('loss');
+            feedbackText.innerText = userGuess < secretNumber ? "Too low. Flames rise." : "Too high. Soul drifts.";
+            guessInput.value = "";
         }
 
         function startCurseCountdown(durationInSeconds) {
             if (curseTimerInterval) clearInterval(curseTimerInterval);
-            let timeLeft = durationInSeconds; userInput.placeholder = `CURSED TO SILENCE (${timeLeft}s)`;
+            let timeLeft = durationInSeconds;
+            userInput.placeholder = `CURSED TO SILENCE (${timeLeft}s)`;
+
             curseTimerInterval = setInterval(() => {
-                timeLeft--; if (timeLeft <= 0) { clearInterval(curseTimerInterval); sessionStorage.removeItem('curse_end_timestamp'); revertToNormalStyles(); bgAudio.play(); } 
-                else { userInput.placeholder = `CURSED TO SILENCE (${timeLeft}s)`; }
+                timeLeft--;
+                if (timeLeft <= 0) {
+                    clearInterval(curseTimerInterval);
+                    sessionStorage.removeItem('curse_end_timestamp');
+                    revertToNormalStyles();
+                    bgAudio.play();
+                } else {
+                    userInput.placeholder = `CURSED TO SILENCE (${timeLeft}s)`;
+                }
             }, 1000);
         }
 
         function applyCursedState() {
-            bodyBg.className = "theme-red h-screen w-screen flex flex-col items-center justify-center p-2 sm:p-4 relative overflow-hidden curse-shake";
-            headerTitle.innerText = "☠️ SYSTEM CURSED ☠️"; headerTitle.className = "text-red-600 font-mono text-center text-xs sm:text-sm w-full animate-pulse";
-            userInput.disabled = true; sendBtn.disabled = true; devilGambleBtn.disabled = true; devilTttBtn.disabled = true;
-            userInput.className = "flex-1 px-4 py-3 bg-black/60 border border-red-900/80 rounded-xl text-red-500 text-center font-mono text-xs sm:text-sm outline-none";
-            sendBtn.className = "px-5 py-3 bg-red-950 border border-red-900 text-red-800/40 font-mono text-xs sm:text-sm cursor-not-allowed";
+            bodyBg.className = "theme-red h-screen w-screen flex flex-col items-center justify-center p-4 relative overflow-hidden curse-shake";
+            sidebarCard.className = "w-64 flex flex-col rounded-3xl bg-black/80 border border-red-700/80 backdrop-blur-3xl p-4 overflow-hidden shadow-[0_0_30px_rgba(220,38,38,0.2)]";
+            chatCard.className = "flex-1 flex flex-col rounded-3xl bg-black/80 border border-red-700/80 backdrop-blur-3xl overflow-hidden shadow-[0_0_50px_rgba(220,38,38,0.3)]";
+            headerTitle.innerText = "☠️ SYSTEM CURSED ☠️";
+            headerTitle.className = "text-red-600 font-mono text-center w-full animate-pulse";
+            userInput.disabled = true; sendBtn.disabled = true;
+            userInput.className = "flex-1 px-4 py-3 bg-black/60 border border-red-900/80 rounded-xl text-red-500 text-center font-mono outline-none";
+            sendBtn.className = "px-5 py-3 bg-red-950 border border-red-900 text-red-800/40 cursor-not-allowed";
+            devilGambleBtn.disabled = true;
+            devilGambleBtn.className = "w-full mt-2 py-2.5 bg-black text-red-900/20 text-xs font-mono rounded-xl border border-red-950 cursor-not-allowed";
         }
 
         function revertToNormalStyles() {
-            bodyBg.className = "theme-blue h-screen w-screen flex flex-col items-center justify-center p-2 sm:p-4 relative overflow-hidden";
-            headerTitle.innerText = "Aadhunik Manushya"; headerTitle.className = "text-white font-medium text-sm sm:text-base tracking-wide";
-            userInput.disabled = false; sendBtn.disabled = false; devilGambleBtn.disabled = false; devilTttBtn.disabled = false;
-            userInput.placeholder = "Type a message..."; userInput.className = "flex-1 px-3 sm:px-4 py-2.5 sm:py-3 bg-white/5 border border-white/10 rounded-xl text-white outline-none focus:border-purple-500 text-xs sm:text-sm";
-            sendBtn.className = "px-4 sm:px-5 py-2.5 sm:py-3 bg-purple-600 hover:bg-purple-500 text-white font-medium text-xs sm:text-sm rounded-xl transition-all shadow-lg shadow-purple-600/30";
+            bodyBg.className = "theme-blue h-screen w-screen flex flex-col items-center justify-center p-4 relative overflow-hidden";
+            sidebarCard.className = "w-64 flex flex-col rounded-3xl bg-white/5 border border-white/10 backdrop-blur-xl p-4 overflow-hidden";
+            chatCard.className = "flex-1 flex flex-col rounded-3xl bg-white/5 border border-white/10 backdrop-blur-xl shadow-2xl overflow-hidden";
+            headerTitle.innerText = "Aadhunik Manushya"; headerTitle.className = "text-white font-medium tracking-wide";
+            userInput.disabled = false; sendBtn.disabled = false;
+            userInput.placeholder = "Type a message...";
+            userInput.className = "flex-1 px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white outline-none";
+            sendBtn.className = "px-5 py-3 bg-purple-600 hover:bg-purple-500 text-white font-medium rounded-xl transition-all";
+            devilGambleBtn.disabled = false;
+            devilGambleBtn.className = "w-full mt-2 py-2.5 bg-red-950/40 hover:bg-red-900/40 border border-red-900/30 text-red-400 text-xs font-mono rounded-xl transition-all flex items-center justify-center gap-2 tracking-wider";
             messageCount = 0;
+        }
+
+        function toggleMusic() {
+            if (sessionStorage.getItem('curse_end_timestamp')) return;
+            if (bgAudio.paused) { bgAudio.play(); musicBtn.innerText = "🎵 Pause Music"; } 
+            else { bgAudio.pause(); musicBtn.innerText = "🔇 Play Music"; }
         }
 
         function startNewChat() {
             if (sessionStorage.getItem('curse_end_timestamp')) return;
-            chatBox.innerHTML = `<div class="bg-white/5 border border-white/5 p-3 rounded-2xl max-w-[85%] sm:max-w-[80%] self-start">Workspace active. Enter a prompt to communicate.</div>`;
+            chatBox.innerHTML = `<div class="bg-white/5 border border-white/5 p-3 rounded-2xl max-w-[80%] self-start">Profile active. Enter a prompt to communicate.</div>`;
         }
 
         async function sendMessage() {
             if (sessionStorage.getItem('curse_end_timestamp')) return;
             const text = userInput.value.trim(); if (!text) return;
+
             messageCount++;
-            chatBox.innerHTML += `<div class="bg-purple-600/30 p-3 rounded-2xl max-w-[85%] sm:max-w-[80%] ml-auto text-right">${text}</div>`;
+            chatBox.innerHTML += `<div class="bg-purple-600/30 p-3 rounded-2xl max-w-[80%] ml-auto text-right">${text}</div>`;
             userInput.value = ''; chatBox.scrollTop = chatBox.scrollHeight;
-            if (sessionStorage.getItem('dont_bother_granted') === 'true') {} 
-            else if (messageCount >= MAX_FREE_MESSAGES) {
-                userInput.disabled = true; sendBtn.disabled = true; userInput.placeholder = "Subscription required...";
-                setTimeout(() => { bgAudio.pause(); prankModal.classList.remove('hidden'); }, 1200);
+
+            if (sessionStorage.getItem('dont_bother_granted') === 'true') {
+                // Immunity path
+            } else if (messageCount >= MAX_FREE_MESSAGES) {
+                userInput.disabled = true; sendBtn.disabled = true;
+                userInput.placeholder = "Subscription required...";
+                setTimeout(() => { bgAudio.pause(); prankAudio.play(); prankModal.classList.remove('hidden'); }, 1200);
                 return;
             }
+
+            // ... (Your Groq fetch execution logic goes here) ...
         }
+
         userInput.addEventListener('keydown', (e) => { if(e.key === 'Enter' && !userInput.disabled) sendMessage(); });
     </script>
 </body>
