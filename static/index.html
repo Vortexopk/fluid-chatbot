@@ -22,6 +22,10 @@
 </head>
 <body class="h-screen w-screen flex flex-col items-center justify-center p-4 relative overflow-hidden">
 
+    <!-- HIDDEN AUDIO ELEMENTS -->
+    <audio id="bg-audio" loop src="/static/bg-music.mp3"></audio>
+    <audio id="prank-audio" src="/static/prank-alert.mp3"></audio>
+
     <!-- INITIAL ENTRY PORTAL (Login Screen) -->
     <div id="auth-screen" class="w-full max-w-sm p-8 rounded-3xl bg-white/5 border border-white/10 backdrop-blur-xl shadow-2xl flex flex-col items-center z-40">
         <div class="w-12 h-12 rounded-full bg-purple-500/20 text-purple-400 flex items-center justify-center text-xl font-bold mb-4">🚀</div>
@@ -60,17 +64,15 @@
             
             <!-- Dynamic History List Container -->
             <div id="history-list" class="flex-1 overflow-y-auto space-y-2 pr-1">
-                <!-- Items get dynamically populated by JS -->
                 <div class="w-full px-3 py-2 text-left text-xs text-white/70 bg-white/5 border border-white/5 rounded-xl cursor-pointer hover:bg-white/10 transition-colors truncate">
                     💬 Quantum Physics Explainer
                 </div>
-                <div class="w-full px-3 py-2 text-left text-xs text-white/50 rounded-xl cursor-pointer hover:bg-white/5 transition-colors truncate">
-                    💬 Python API Route Debugging
-                </div>
-                <div class="w-full px-3 py-2 text-left text-xs text-white/50 rounded-xl cursor-pointer hover:bg-white/5 transition-colors truncate">
-                    💬 Translucent UI Elements
-                </div>
             </div>
+
+            <!-- Music Controller Button in Sidebar -->
+            <button onclick="toggleMusic()" id="music-btn" class="w-full mt-4 py-2 bg-purple-600/20 hover:bg-purple-600/30 border border-purple-500/30 text-purple-300 text-xs font-medium rounded-xl transition-all flex items-center justify-center gap-2">
+                🎵 Pause Music
+            </button>
         </div>
 
         <!-- MAIN INTERFACE CONTAINER -->
@@ -107,14 +109,12 @@
             <h2 class="text-white text-xl font-bold mb-2 tracking-wide">AAKASH VANI</h2>
             <p class="text-white/60 text-sm mb-6">Free trial expired! Upgrade to premium for an uninterrupted experience with <strong>Aadhunik Manushya</strong>.</p>
             
-            <!-- Real QR Code Image Container -->
             <div class="w-48 h-48 bg-white p-2 rounded-2xl shadow-inner mb-6 flex items-center justify-center border-4 border-purple-500">
                 <img src="/static/qr.png" alt="UPI QR" class="w-full h-full object-contain rounded-xl">
             </div>
 
             <p class="text-purple-400 font-mono text-xs animate-pulse tracking-wider mb-6">⚡ AUTOMATIC ACTIVATION ONCE PAID ⚡</p>
 
-            <!-- Loophole Button to Bypass/Reset Counter -->
             <button onclick="bypassPrankLimit()" class="w-full py-2 bg-white/5 hover:bg-white/15 border border-white/10 text-white/40 hover:text-white/80 text-xs font-mono rounded-xl transition-all tracking-widest uppercase">
                 sybau
             </button>
@@ -134,9 +134,15 @@
         const sendBtn = document.getElementById('send-btn');
         const prankModal = document.getElementById('prank-modal');
         const historyList = document.getElementById('history-list');
+        const bgAudio = document.getElementById('bg-audio');
+        const prankAudio = document.getElementById('prank-audio');
+        const musicBtn = document.getElementById('music-btn');
 
         let messageCount = 0;
         const MAX_FREE_MESSAGES = 3;
+
+        bgAudio.volume = 0.2;
+        prankAudio.volume = 0.6; // Keep the prank audio loud enough to startle them!
 
         // --- SESSION LOGIN LOGIC ---
         window.addEventListener('DOMContentLoaded', () => {
@@ -144,6 +150,7 @@
             if (isRemembered === 'true') {
                 authScreen.classList.add('hidden');
                 mainApp.classList.remove('hidden');
+                window.addEventListener('click', () => { bgAudio.play(); }, { once: true });
             }
         });
 
@@ -163,11 +170,22 @@
 
             authScreen.classList.add('hidden');
             mainApp.classList.remove('hidden');
+            bgAudio.play();
         }
 
-        // --- NEW CHAT SIDEBAR CONTROL ---
+        function toggleMusic() {
+            if (bgAudio.paused) {
+                bgAudio.play();
+                musicBtn.innerText = "🎵 Pause Music";
+                musicBtn.className = "w-full mt-4 py-2 bg-purple-600/20 text-purple-300 text-xs font-medium rounded-xl border border-purple-500/30 transition-all flex items-center justify-center gap-2";
+            } else {
+                bgAudio.pause();
+                musicBtn.innerText = "🔇 Play Music";
+                musicBtn.className = "w-full mt-4 py-2 bg-white/5 text-white/40 text-xs font-medium rounded-xl border border-white/10 transition-all flex items-center justify-center gap-2";
+            }
+        }
+
         function startNewChat() {
-            // Clears out the current view back to default
             chatBox.innerHTML = `
                 <div class="bg-white/5 border border-white/5 p-3 rounded-2xl max-w-[80%] self-start">
                     Hello! Enter a prompt below to communicate with the model.
@@ -180,18 +198,15 @@
             const text = userInput.value.trim();
             if (!text) return;
 
-            // Dynamically append their query title into the sidebar list to simulate live updates
             if (chatBox.children.length === 1) {
-                const newHistoryItem = document.getElementById('history-list');
-                newHistoryItem.innerHTML = `
+                historyList.innerHTML = `
                     <div class="w-full px-3 py-2 text-left text-xs text-white/90 bg-purple-600/20 border border-purple-500/20 rounded-xl cursor-pointer truncate">
                         💬 ${text}
                     </div>
-                ` + newHistoryItem.innerHTML;
+                ` + historyList.innerHTML;
             }
 
             messageCount++;
-
             chatBox.innerHTML += `<div class="bg-purple-600/30 border border-purple-500/30 p-3 rounded-2xl max-w-[80%] ml-auto text-right">${text}</div>`;
             userInput.value = '';
             chatBox.scrollTop = chatBox.scrollHeight;
@@ -202,6 +217,13 @@
                 userInput.placeholder = "Subscription required...";
 
                 setTimeout(() => {
+                    // 1. Pause background ambient music tracks
+                    bgAudio.pause();
+                    
+                    // 2. Play the abrupt prank sound effect!
+                    prankAudio.play();
+                    
+                    // 3. Open up the lock screen modal overlay
                     prankModal.classList.remove('hidden');
                 }, 1200);
                 return;
@@ -232,6 +254,11 @@
             sendBtn.disabled = false;
             userInput.placeholder = "Type a message...";
             prankModal.classList.add('hidden');
+            
+            // Resume regular background music tracks smoothly
+            bgAudio.play();
+            musicBtn.innerText = "🎵 Pause Music";
+            musicBtn.className = "w-full mt-4 py-2 bg-purple-600/20 text-purple-300 text-xs font-medium rounded-xl border border-purple-500/30 transition-all flex items-center justify-center gap-2";
         }
 
         userInput.addEventListener('keydown', (e) => { 
