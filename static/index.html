@@ -69,10 +69,17 @@
         <div id="sidebar-card" class="w-64 flex flex-col rounded-3xl bg-white/5 border border-white/10 backdrop-blur-xl p-4 overflow-hidden transition-all duration-500">
             <button onclick="startNewChat()" class="w-full py-2.5 mb-4 bg-white/10 hover:bg-white/15 text-white text-sm font-medium rounded-xl border border-white/10 transition-all flex items-center justify-center gap-2"><span>+</span> New Chat</button>
             <div class="text-white/40 text-[10px] font-bold tracking-wider uppercase mb-2 px-2">Recent Chats</div>
+            
             <div id="history-list" class="flex-1 overflow-y-auto space-y-2 pr-1">
                 <div class="w-full px-3 py-2 text-left text-xs text-white/70 bg-white/5 border border-white/5 rounded-xl cursor-pointer">💬 Welcome Conversation</div>
             </div>
-            <button onclick="toggleMusic()" id="music-btn" class="w-full mt-4 py-2 bg-purple-600/20 hover:bg-purple-600/30 border border-purple-500/30 text-purple-300 text-xs font-medium rounded-xl transition-all flex items-center justify-center gap-2">🎵 Pause Music</button>
+
+            <!-- WILLING DEVIL CHALLENGE OPTION -->
+            <button id="devil-gamble-btn" onclick="startDevilGame()" class="w-full mt-2 py-2.5 bg-red-950/40 hover:bg-red-900/40 border border-red-900/30 text-red-400 text-xs font-mono rounded-xl transition-all flex items-center justify-center gap-2 tracking-wider">
+                👹 Deal with Devil
+            </button>
+
+            <button onclick="toggleMusic()" id="music-btn" class="w-full mt-2 py-2 bg-purple-600/20 hover:bg-purple-600/30 border border-purple-500/30 text-purple-300 text-xs font-medium rounded-xl transition-all flex items-center justify-center gap-2">🎵 Pause Music</button>
         </div>
 
         <!-- MAIN CHAT CONTAINER -->
@@ -151,6 +158,7 @@
         const chatCard = document.getElementById('chat-card');
         const headerPulse = document.getElementById('header-pulse');
         const headerTitle = document.getElementById('header-title');
+        const devilGambleBtn = document.getElementById('devil-gamble-btn');
 
         let messageCount = 0;
         const MAX_FREE_MESSAGES = 3;
@@ -216,6 +224,8 @@
         }
 
         function startDevilGame() {
+            if (sessionStorage.getItem('curse_end_timestamp')) return;
+            
             prankAudio.pause();
             bgAudio.pause();
             hellAudio.play();
@@ -226,7 +236,6 @@
             document.getElementById('game-feedback').innerText = "";
             document.getElementById('game-guess').value = "";
 
-            // Sync visual streak flags onto the game UI overlay
             document.getElementById('ui-win-streak').innerText = (sessionStorage.getItem('w_streak') || "0") + "x";
             document.getElementById('ui-loss-streak').innerText = (sessionStorage.getItem('l_streak') || "0") + "x";
 
@@ -245,16 +254,13 @@
             }
 
             if (userGuess === secretNumber) {
-                // --- USER WINS THE GAME INTERACTION ---
                 gameModal.classList.add('hidden');
                 hellAudio.pause();
 
-                // Increment Winning Streaks
                 let wStreak = parseInt(sessionStorage.getItem('w_streak') || "0") + 1;
                 sessionStorage.setItem('w_streak', wStreak.toString());
-                sessionStorage.removeItem('l_streak'); // Break losing sequence tracking data
+                sessionStorage.removeItem('l_streak'); 
 
-                // Play custom win streak cue
                 if (wStreak >= 2) {
                     winStreakAudio.play();
                 } else {
@@ -265,7 +271,6 @@
                 sessionStorage.setItem('dont_bother_granted', 'true');
                 revertToNormalStyles();
 
-                // Ragebait Notification alert dispatch layout 
                 alert(`👹: "you won bcz i let you win. (Win Streak: ${wStreak}x)"`);
                 return;
             }
@@ -274,14 +279,13 @@
             document.getElementById('game-lives').innerText = livesLeft;
 
             if (livesLeft <= 0) {
-                // --- USER LOSES THE GAME INTERACTION ---
                 gameModal.classList.add('hidden');
                 hellAudio.pause();
 
-                // Increment Losing Streaks
                 let lStreak = parseInt(sessionStorage.getItem('l_streak') || "0") + 1;
                 sessionStorage.setItem('l_streak', lStreak.toString());
-                sessionStorage.removeItem('w_streak'); // Break winning session sequences
+                sessionStorage.removeItem('w_streak'); 
+                sessionStorage.removeItem('dont_bother_granted'); // Revoke immunity if they play and lose willingly!
 
                 if (lStreak >= 2) {
                     lossStreakAudio.play();
@@ -289,18 +293,15 @@
                     loseAudio.play();
                 }
 
-                // Progressive scaling calculation loop parameters
                 const initialCurseSeconds = 9;
                 let finalTimeInSeconds = initialCurseSeconds * lStreak;
 
-                // Lock timestamp onto sessionStorage mapping data schemas
                 const expiryTime = Date.now() + (finalTimeInSeconds * 1000);
                 sessionStorage.setItem('curse_end_timestamp', expiryTime.toString());
 
                 applyCursedState();
                 startCurseCountdown(finalTimeInSeconds);
 
-                // Corny loss alert mock messaging logic
                 alert(`👹: "playing with the devil was a great choice. (Loss Streak: ${lStreak}x)"`);
                 return;
             }
@@ -351,6 +352,10 @@
             userInput.className = "flex-1 px-4 py-3 bg-black/60 border border-red-900/80 rounded-xl text-red-500 text-center font-mono outline-none";
             sendBtn.className = "px-5 py-3 bg-red-950 border border-red-900 text-red-800/40 font-mono rounded-xl cursor-not-allowed";
             
+            // Adjust sidebar buttons during curse
+            devilGambleBtn.disabled = true;
+            devilGambleBtn.className = "w-full mt-2 py-2.5 bg-black text-red-900/20 text-xs font-mono rounded-xl border border-red-950 cursor-not-allowed";
+            
             document.getElementById('bot-welcome-msg').innerText = "💀 THE DEVIL ENJOYS YOUR SILENCE. REFRESHING WON'T SAVE YOU.";
             musicBtn.innerText = "🔇 LOCKED BY CURSE";
             musicBtn.disabled = true;
@@ -371,6 +376,10 @@
             userInput.className = "flex-1 px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white outline-none focus:border-purple-500 transition-colors placeholder-white/30";
             sendBtn.className = "px-5 py-3 bg-purple-600 hover:bg-purple-500 text-white font-medium rounded-xl transition-all shadow-lg shadow-purple-600/30";
             
+            // Restore willing button styles
+            devilGambleBtn.disabled = false;
+            devilGambleBtn.className = "w-full mt-2 py-2.5 bg-red-950/40 hover:bg-red-900/40 border border-red-900/30 text-red-400 text-xs font-mono rounded-xl transition-all flex items-center justify-center gap-2 tracking-wider";
+
             messageCount = 0;
             musicBtn.disabled = false;
             musicBtn.innerText = "🎵 Pause Music";
@@ -410,7 +419,7 @@
             chatBox.scrollTop = chatBox.scrollHeight;
 
             if (sessionStorage.getItem('dont_bother_granted') === 'true') {
-                // Unlimited message path unlocked for this session block
+                // Unlimited message path unlocked
             } else if (messageCount >= MAX_FREE_MESSAGES) {
                 userInput.disabled = true;
                 sendBtn.disabled = true;
