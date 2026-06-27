@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Grok Chatbot</title>
+    <title>Aadhunik Manushya</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         /* Smooth moving fluid background */
@@ -22,21 +22,21 @@
         ::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.2); border-radius: 10px; }
     </style>
 </head>
-<body class="h-screen w-screen flex items-center justify-center p-4">
+<body class="h-screen w-screen flex flex-col items-center justify-center p-4 relative">
 
     <!-- Translucent Frosted Glass Card -->
     <div class="w-full max-w-2xl h-[85vh] flex flex-col rounded-3xl bg-white/5 border border-white/10 backdrop-blur-xl shadow-2xl overflow-hidden">
         
-        <!-- Header -->
+        <!-- Header (Updated Title) -->
         <div class="px-6 py-4 border-b border-white/10 bg-white/5 flex items-center gap-3">
             <div class="w-3 h-3 rounded-full bg-purple-400 animate-pulse"></div>
-            <h1 class="text-white font-medium tracking-wide">Grok Core Interface</h1>
+            <h1 class="text-white font-medium tracking-wide">Aadhunik Manushya</h1>
         </div>
 
         <!-- Chat Area -->
         <div id="chat-box" class="flex-1 p-6 overflow-y-auto space-y-4 text-sm text-white/90">
             <div class="bg-white/5 border border-white/5 p-3 rounded-2xl max-w-[80%] self-start">
-                Hello! Enter a prompt below to communicate with Grok.
+                Hello! Enter a prompt below to communicate with the model.
             </div>
         </div>
 
@@ -48,6 +48,11 @@
                 Send
             </button>
         </div>
+    </div>
+
+    <!-- Custom Watermark Branding at Bottom -->
+    <div class="absolute bottom-2 text-white/30 text-[10px] font-mono tracking-widest uppercase text-center w-full select-none">
+        made by debartha AKA VOTECX
     </div>
 
     <!-- Frontend logic connecting UI to backend API -->
@@ -66,7 +71,7 @@
 
             // Append Loading Indicator
             const loadingId = 'load-' + Date.now();
-            chatBox.innerHTML += `<div id="${loadingId}" class="text-white/40 italic">Grok is thinking...</div>`;
+            chatBox.innerHTML += `<div id="${loadingId}" class="text-white/40 italic">Thinking...</div>`;
 
             try {
                 const response = await fetch('/api/chat', {
