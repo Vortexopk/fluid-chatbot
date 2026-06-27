@@ -1,80 +1,39 @@
-import sqlite3
-from flask import Flask, request, jsonify, session
+import os
+from flask import Flask, request, jsonify
 
-# ... (Keep your existing Flask app init and Groq chat API logic here) ...
+app = Flask(__name__, static_folder='static', static_url_path='/static')
 
-DB_FILE = "database.db"
+# Initialize Groq client using your environment variables set on Render
+from groq import Groq
+client = Groq(api_key=os.environ.get("GROQ_API_KEY"))
 
-def init_db():
-    with sqlite3.connect(DB_FILE) as conn:
-        cursor = conn.cursor()
-        # Create users table with high score win streak tracking
-        cursor.execute('''
-            CREATE TABLE IF NOT EXISTS users (
-                id INTEGER PRIMARY KEY AUTOINCREMENT,
-                username TEXT UNIQUE NOT NULL,
-                password TEXT NOT NULL,
-                max_win_streak INTEGER DEFAULT 0
-            )
-        ''')
-        conn.commit()
+@app.route('/')
+def home():
+    return app.send_static_file('index.html')
 
-init_db()
-
-# --- REAL REGISTRATION / LOGIN ENDPOINTS ---
-@app.route('/api/auth', methods=['POST'])
-def handle_auth():
+@app.route('/api/chat', methods=['POST'])
+def chat():
     data = request.json or {}
-    username = data.get('username', '').strip()
-    password = data.get('password', '').strip()
-    action = data.get('action') # 'login' or 'register'
+    user_message = data.get('message', '')
 
-    if not username or not password:
-        return jsonify({"error": "Missing fields"}), 400
+    if not user_message:
+        return jsonify({"error": "Prompt message is required"}), 400
 
-    with sqlite3.connect(DB_FILE) as conn:
-        cursor = conn.cursor()
-        
-        if action == 'register':
-            try:
-                cursor.execute("INSERT INTO users (username, password) VALUES (?, ?)", (username, password))
-                conn.commit()
-                return jsonify({"message": "Account forged!"}), 201
-            except sqlite3.IntegrityError:
-                return jsonify({"error": "Username taken by another soul"}), 400
-                
-        elif action == 'login':
-            cursor.execute("SELECT password, max_win_streak FROM users WHERE username = ?", (username,))
-            row = cursor.fetchone()
-            if row and row[0] == password:
-                return jsonify({"username": username, "max_win_streak": row[1]}), 200
-            return jsonify({"error": "Invalid profile credentials"}), 401
+    try:
+        completion = client.chat.completions.create(
+            model="llama3-8b-8192",
+            messages=[
+                {"role": "system", "content": "You are a helpful and advanced AI core companion named Aadhunik Manushya."},
+                {"role": "user", "content": user_message}
+            ]
+        )
+        bot_response = completion.choices[0].message.content
+        return jsonify({"response": bot_response}), 200
 
-# --- UPDATE WIN STREAK ENDPOINT ---
-@app.route('/api/leaderboard/update', methods=['POST'])
-def update_streak():
-    data = request.json or {}
-    username = data.get('username', '').strip()
-    current_streak = int(data.get('streak', 0))
+    except Exception as e:
+        print(f"Groq API Error: {str(e)}")
+        return jsonify({"error": "Failed to communicate with Groq compute engine"}), 500
 
-    with sqlite3.connect(DB_FILE) as conn:
-        cursor = conn.cursor()
-        # Only update if the new streak breaks their historical record
-        cursor.execute("SELECT max_win_streak FROM users WHERE username = ?", (username,))
-        row = cursor.fetchone()
-        if row and current_streak > row[0]:
-            cursor.execute("UPDATE users SET max_win_streak = ? WHERE username = ?", (current_streak, username))
-            conn.commit()
-            return jsonify({"message": "New Personal Record!"}), 200
-    return jsonify({"message": "Streak acknowledged"}), 200
-
-# --- GET LEADERBOARD ENDPOINT ---
-@app.route('/api/leaderboard', methods=['GET'])
-def get_leaderboard():
-    with sqlite3.connect(DB_FILE) as conn:
-        cursor = conn.cursor()
-        # Fetch top 5 players sorted by their highest win streaks
-        cursor.execute("SELECT username, max_win_streak FROM users ORDER BY max_win_streak DESC LIMIT 5")
-        rows = cursor.fetchall()
-        leaderboard = [{"username": r[0], "streak": r[1]} for r in rows]
-    return jsonify(leaderboard), 200
+if __name__ == '__main__':
+    port = int(os.environ.get("PORT", 5000))
+    app.run(host='0.0.0.0', port=port)
