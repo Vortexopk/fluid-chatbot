@@ -22,8 +22,32 @@
 </head>
 <body class="h-screen w-screen flex flex-col items-center justify-center p-4 relative overflow-hidden">
 
-    <!-- Translucent Frosted Glass Card -->
-    <div class="w-full max-w-2xl h-[85vh] flex flex-col rounded-3xl bg-white/5 border border-white/10 backdrop-blur-xl shadow-2xl overflow-hidden">
+    <!-- INITIAL ENTRY PORTAL (Login Screen) -->
+    <div id="auth-screen" class="w-full max-w-sm p-8 rounded-3xl bg-white/5 border border-white/10 backdrop-blur-xl shadow-2xl flex flex-col items-center z-40">
+        <div class="w-12 h-12 rounded-full bg-purple-500/20 text-purple-400 flex items-center justify-center text-xl font-bold mb-4">🚀</div>
+        <h2 class="text-white text-xl font-bold mb-1">Aadhunik Manushya</h2>
+        <p class="text-white/60 text-xs mb-6 text-center">Sign in to access the Groq core interface engine</p>
+        
+        <div class="w-full space-y-3 mb-4">
+            <input id="login-user" type="text" placeholder="Username" 
+                   class="w-full px-4 py-2.5 bg-white/5 border border-white/10 rounded-xl text-white text-sm outline-none focus:border-purple-500 transition-colors placeholder-white/20">
+            <input id="login-pass" type="password" placeholder="Password" 
+                   class="w-full px-4 py-2.5 bg-white/5 border border-white/10 rounded-xl text-white text-sm outline-none focus:border-purple-500 transition-colors placeholder-white/20">
+        </div>
+
+        <!-- Remember Me Toggle -->
+        <div class="w-full flex items-center mb-6 px-1">
+            <input id="remember-me" type="checkbox" class="w-4 h-4 rounded bg-white/5 border-white/10 text-purple-600 focus:ring-0 cursor-pointer">
+            <label for="remember-me" class="text-white/50 text-xs ml-2 select-none cursor-pointer hover:text-white/70 transition-colors">Remember me</label>
+        </div>
+
+        <button onclick="handleInitialLogin()" class="w-full py-2.5 bg-purple-600 hover:bg-purple-500 text-white text-sm font-medium rounded-xl transition-all shadow-lg shadow-purple-600/30">
+            Sign In
+        </button>
+    </div>
+
+    <!-- MAIN APPLICATION CONTAINER (Hidden until logged in) -->
+    <div id="main-app" class="hidden w-full max-w-2xl h-[85vh] flex flex-col rounded-3xl bg-white/5 border border-white/10 backdrop-blur-xl shadow-2xl overflow-hidden">
         
         <!-- Header -->
         <div class="px-6 py-4 border-b border-white/10 bg-white/5 flex items-center gap-3">
@@ -48,19 +72,26 @@
         </div>
     </div>
 
-    <!-- PRANK MODAL: Hidden by default ('hidden') -->
-    <div id="prank-modal" class="hidden absolute inset-0 bg-black/60 backdrop-blur-md flex items-center justify-center p-4 z-50 animate-fade-in">
+    <!-- PRANK PAYWALL MODAL -->
+    <div id="prank-modal" class="hidden absolute inset-0 bg-black/60 backdrop-blur-md flex items-center justify-center p-4 z-50">
         <div class="bg-slate-900/90 border border-white/10 p-8 rounded-3xl max-w-sm w-full text-center shadow-2xl flex flex-col items-center">
-            <div class="w-12 h-12 rounded-full bg-amber-500/20 text-amber-400 flex items-center justify-center text-xl font-bold mb-4">⚠️</div>
-            <h2 class="text-white text-xl font-bold mb-2">XD haha</h2>
-            <p class="text-white/60 text-sm mb-6">You have reached your local tier limits. Scan below to unlock <strong>Aadhunik Manushya PRO</strong> for unlimited access.</p>
+            <div class="w-12 h-12 rounded-full bg-purple-500/20 text-purple-400 flex items-center justify-center text-xl font-bold mb-4">🔮</div>
             
-            <!-- UPI Placeholder Square (Put your QR image inside your static folder or link it here) -->
+            <!-- Updated Header Title -->
+            <h2 class="text-white text-xl font-bold mb-2 tracking-wide">AAKASH VANI</h2>
+            <p class="text-white/60 text-sm mb-6">Free trial expired! Upgrade to premium for an uninterrupted experience with <strong>Aadhunik Manushya</strong>.</p>
+            
+            <!-- Real QR Code Image Container -->
             <div class="w-48 h-48 bg-white p-2 rounded-2xl shadow-inner mb-6 flex items-center justify-center border-4 border-purple-500">
                 <img src="/static/qr.png" alt="UPI QR" class="w-full h-full object-contain rounded-xl">
             </div>
 
-            <p class="text-purple-400 font-mono text-xs animate-pulse tracking-wider">⚡ AUTOMATIC ACTIVATION ONCE PAID ⚡</p>
+            <p class="text-purple-400 font-mono text-xs animate-pulse tracking-wider mb-6">⚡ AUTOMATIC ACTIVATION ONCE PAID ⚡</p>
+
+            <!-- Loophole Button to Bypass/Reset Counter -->
+            <button onclick="bypassPrankLimit()" class="w-full py-2 bg-white/5 hover:bg-white/15 border border-white/10 text-white/40 hover:text-white/80 text-xs font-mono rounded-xl transition-all tracking-widest uppercase">
+                sybau
+            </button>
         </div>
     </div>
 
@@ -70,42 +101,66 @@
     </div>
 
     <script>
+        const authScreen = document.getElementById('auth-screen');
+        const mainApp = document.getElementById('main-app');
         const chatBox = document.getElementById('chat-box');
         const userInput = document.getElementById('user-input');
         const sendBtn = document.getElementById('send-btn');
         const prankModal = document.getElementById('prank-modal');
 
-        // Track how many messages the user sends
         let messageCount = 0;
         const MAX_FREE_MESSAGES = 3;
 
+        // --- SESSION LOGIN LOGIC (REMEMBER ME) ---
+        window.addEventListener('DOMContentLoaded', () => {
+            const isRemembered = localStorage.getItem('user_logged_in');
+            if (isRemembered === 'true') {
+                authScreen.classList.add('hidden');
+                mainApp.classList.remove('hidden');
+            }
+        });
+
+        function handleInitialLogin() {
+            const user = document.getElementById('login-user').value.trim();
+            const pass = document.getElementById('login-pass').value.trim();
+            const rememberMe = document.getElementById('remember-me').checked;
+
+            if (!user || !pass) {
+                alert("Please complete the authorization profile.");
+                return;
+            }
+
+            // Fake validation: accepts any typed inputs to let them into the interface
+            if (rememberMe) {
+                localStorage.setItem('user_logged_in', 'true');
+            }
+
+            authScreen.classList.add('hidden');
+            mainApp.classList.remove('hidden');
+        }
+
+        // --- CORE CHAT LOGIC ---
         async function sendMessage() {
             const text = userInput.value.trim();
             if (!text) return;
 
-            // 1. Increment count
             messageCount++;
 
-            // Append User Message
             chatBox.innerHTML += `<div class="bg-purple-600/30 border border-purple-500/30 p-3 rounded-2xl max-w-[80%] ml-auto text-right">${text}</div>`;
             userInput.value = '';
             chatBox.scrollTop = chatBox.scrollHeight;
 
-            // 2. Check if prank should trigger after this message
             if (messageCount >= MAX_FREE_MESSAGES) {
-                // Disable inputs
                 userInput.disabled = true;
                 sendBtn.disabled = true;
                 userInput.placeholder = "Subscription required...";
 
-                // Delay the popup slightly so they read their last message first
                 setTimeout(() => {
                     prankModal.classList.remove('hidden');
                 }, 1200);
                 return;
             }
 
-            // Append Loading Indicator
             const loadingId = 'load-' + Date.now();
             chatBox.innerHTML += `<div id="${loadingId}" class="text-white/40 italic">Thinking...</div>`;
 
@@ -117,13 +172,25 @@
                 });
                 const data = await response.json();
                 document.getElementById(loadingId).remove();
-
-                // Append Bot Response
                 chatBox.innerHTML += `<div class="bg-white/5 border border-white/5 p-3 rounded-2xl max-w-[80%]">${data.response}</div>`;
             } catch {
                 document.getElementById(loadingId).innerText = "Error reaching host application.";
             }
             chatBox.scrollTop = chatBox.scrollHeight;
+        }
+
+        // --- THE PRANK LOOPHOLE (SYBAU BYPASS) ---
+        function bypassPrankLimit() {
+            // Reset message tracking counter
+            messageCount = 0;
+
+            // Re-enable input interfaces
+            userInput.disabled = false;
+            sendBtn.disabled = false;
+            userInput.placeholder = "Type a message...";
+
+            // Close the paywall modal container
+            prankModal.classList.add('hidden');
         }
 
         userInput.addEventListener('keydown', (e) => { 
