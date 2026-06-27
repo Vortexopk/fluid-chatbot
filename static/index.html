@@ -23,7 +23,7 @@
 </head>
 <body id="body-bg" class="theme-blue min-h-screen w-screen flex flex-col items-center justify-center p-2 sm:p-4 relative overflow-x-hidden">
 
-    <!-- AUDIO ELEMENTS -->
+    <!-- AUDIO CHANNELS -->
     <audio id="bg-audio" loop src="/static/bg-music.mp3"></audio>
     <audio id="prank-audio" src="/static/prank-alert.mp3"></audio>
     <audio id="hell-audio" loop src="/static/hell-music.mp3"></audio>
@@ -32,11 +32,11 @@
     <audio id="win-streak-audio" src="/static/win-streak.mp3"></audio>
     <audio id="loss-streak-audio" src="/static/loss-streak.mp3"></audio>
 
-    <!-- INITIAL ACCOUNT PORTAL + LEADERBOARD DISPLAY -->
+    <!-- INITIAL ACCOUNT ENTRY ENGINE -->
     <div id="auth-screen" class="w-full max-w-md p-6 sm:p-8 rounded-3xl bg-white/5 border border-white/10 backdrop-blur-xl shadow-2xl flex flex-col items-center z-40 my-auto max-h-[95vh] overflow-y-auto">
         <div class="w-12 h-12 rounded-full bg-purple-500/20 text-purple-400 flex items-center justify-center text-xl font-bold mb-3">🚀</div>
         <h2 class="text-white text-xl font-bold mb-1">Aadhunik Manushya</h2>
-        <p class="text-white/60 text-xs mb-4 text-center">Link your streak to the global database</p>
+        <p class="text-white/60 text-xs mb-4 text-center">Register or Login to connect to the global database</p>
         
         <div class="w-full space-y-2.5 mb-4">
             <input id="login-user" type="text" placeholder="Username" class="w-full px-4 py-2.5 bg-white/5 border border-white/10 rounded-xl text-white text-sm outline-none focus:border-purple-500 transition-colors placeholder-white/20">
@@ -44,60 +44,61 @@
         </div>
 
         <div class="w-full flex gap-2 mb-3">
-            <button onclick="handleDbAuth('login')" class="flex-1 py-2.5 bg-purple-600 hover:bg-purple-500 text-white text-sm font-medium rounded-xl transition-all">Sign In</button>
+            <button onclick="handleDbAuth('login')" class="flex-1 py-2.5 bg-purple-600 hover:bg-purple-500 text-white text-sm font-medium rounded-xl transition-all shadow-lg shadow-purple-600/20">Sign In</button>
             <button onclick="handleDbAuth('register')" class="flex-1 py-2.5 bg-white/10 hover:bg-white/20 text-white text-sm font-medium rounded-xl border border-white/10 transition-all">Register</button>
         </div>
 
-        <!-- SKIP OPTION -->
+        <!-- SKIP OPTION ELEMENT -->
         <button onclick="handleSkipAuth()" class="w-full py-2 mb-4 bg-white/5 hover:bg-white/10 text-white/50 hover:text-white/80 text-xs font-medium rounded-xl border border-white/5 transition-colors">
             Skip & Play as Guest
         </button>
 
-        <!-- PRE-LOGIN LEADERBOARD SCREEN VIEW -->
+        <!-- PRE-LOGIN LEADERBOARD MODULE -->
         <div class="w-full border-t border-white/10 pt-3">
             <div class="text-yellow-400 text-[10px] font-bold tracking-wider uppercase mb-2 text-center">🏆 Global Leaders Highscores</div>
             <div id="auth-leaderboard-container" class="space-y-1.5 max-h-[150px] overflow-y-auto text-[11px] font-mono w-full">
-                <!-- Loaded dynamically via database on load -->
+                <!-- Data populated dynamically via backend fetch -->
             </div>
         </div>
     </div>
 
-    <!-- MAIN SYSTEM WORKSPACE (Responsive Flex Grid mapping) -->
+    <!-- MAIN INTERFACE APPLICATION CONTAINER -->
     <div id="main-app" class="hidden w-full max-w-5xl h-[90vh] sm:h-[85vh] flex flex-col md:flex-row gap-3 sm:gap-4 items-stretch z-30 transition-all duration-300">
         
-        <!-- SIDEBAR PANEL (Collapses cleanly on mobile viewports) -->
+        <!-- SIDEBAR AND RUNTIME LEADERBOARD PANELS -->
         <div id="sidebar-card" class="w-full md:w-64 flex flex-col rounded-2xl sm:rounded-3xl bg-white/5 border border-white/10 backdrop-blur-xl p-3 sm:p-4 overflow-hidden transition-all duration-500 max-h-[220px] md:max-h-none">
             <div class="flex md:flex-col gap-2 w-full items-center md:items-stretch">
-                <button onclick="startNewChat()" class="flex-1 md:w-full py-2 bg-white/10 hover:bg-white/15 text-white text-xs sm:text-sm font-medium rounded-xl border border-white/10 transition-all flex items-center justify-center gap-2"><span>+</span> New</button>
+                <button onclick="startNewChat()" class="flex-1 md:w-full py-2 bg-white/10 hover:bg-white/15 text-white text-xs sm:text-sm font-medium rounded-xl border border-white/10 transition-all flex items-center justify-center gap-2"><span>+</span> New Chat</button>
                 <button onclick="toggleMobileSidebar()" class="md:hidden px-3 py-2 bg-white/5 border border-white/10 text-white text-xs rounded-xl">View Stats</button>
             </div>
             
-            <!-- Collapsible Section Wrapper on Mobile Viewports -->
             <div id="sidebar-expanded-content" class="hidden md:flex flex-col flex-1 mt-3 overflow-hidden">
                 <div class="text-white/40 text-[9px] font-bold tracking-wider uppercase mb-1 px-1">Recent Chats</div>
-                <div id="history-list" class="flex-1 overflow-y-auto space-y-1.5 pr-1 max-h-[80px] md:max-h-[120px] mb-2 text-xs text-white/70">
-                    <div class="w-full px-2 py-1.5 text-left bg-white/5 border border-white/5 rounded-lg truncate">💬 Mainframe Stream</div>
+                <div id="history-list" class="flex-1 overflow-y-auto space-y-1.5 pr-1 max-h-[60px] md:max-h-[100px] mb-2 text-xs text-white/70">
+                    <div class="w-full px-2 py-1.5 text-left bg-white/5 border border-white/5 rounded-lg truncate">💬 Connected Engine</div>
                 </div>
 
-                <!-- PERSISTENT SIDEBAR IN-APP LEADERBOARD CONTAINER -->
+                <!-- MAIN WORKSPACE LEADERBOARD DISPLAY -->
                 <div class="border-t border-white/10 pt-2 mb-2 flex-1 flex flex-col min-h-[100px] md:min-h-[130px]">
                     <div class="text-yellow-400 text-[9px] font-bold tracking-wider uppercase mb-1 px-1 flex justify-between items-center">
-                        <span>🏆 Rankings</span>
+                        <span>🏆 Global Rankings</span>
                         <span onclick="fetchLeaderboard()" class="cursor-pointer hover:text-white transition-colors">🔄</span>
                     </div>
-                    <div id="app-leaderboard-container" class="space-y-1 flex-1 overflow-y-auto text-[10px] font-mono"></div>
+                    <div id="app-leaderboard-container" class="space-y-1.5 flex-1 overflow-y-auto text-[10px] font-mono">
+                        <!-- Streamed scores -->
+                    </div>
                 </div>
             </div>
 
-            <!-- GAMBLE SYSTEM BUTTON INTERACTIONS -->
+            <!-- INTERACTION COMMAND OPTIONS -->
             <div class="hidden md:grid grid-cols-2 md:grid-cols-1 gap-1.5 pt-2 border-t border-white/10" id="sidebar-action-wrapper">
-                <button id="devil-gamble-btn" onclick="startDevilGame()" class="w-full py-2 bg-red-950/40 hover:bg-red-900/40 border border-red-900/30 text-red-400 text-[11px] font-mono rounded-xl transition-all tracking-wide">👹 Wager Game</button>
-                <button id="devil-ttt-btn" onclick="startTicTacToeGame()" class="w-full py-2 bg-red-950/40 hover:bg-red-900/40 border border-red-900/30 text-red-400 text-[11px] font-mono rounded-xl transition-all tracking-wide">❌ Cross&Zero</button>
+                <button id="devil-gamble-btn" onclick="startDevilGame()" class="w-full py-2 bg-red-950/40 hover:bg-red-900/40 border border-red-900/30 text-red-400 text-[11px] font-mono rounded-xl transition-all">👹 Wager Game</button>
+                <button id="devil-ttt-btn" onclick="startTicTacToeGame()" class="w-full py-2 bg-red-950/40 hover:bg-red-900/40 border border-red-900/30 text-red-400 text-[11px] font-mono rounded-xl transition-all">❌ Cross&Zero</button>
             </div>
-            <button onclick="toggleMusic()" id="music-btn" class="w-full mt-2 py-1.5 bg-purple-600/20 hover:bg-purple-600/30 border border-purple-500/30 text-purple-300 text-xs font-medium rounded-xl transition-all flex items-center justify-center gap-2">🎵 Music</button>
+            <button onclick="toggleMusic()" id="music-btn" class="w-full mt-2 py-1.5 bg-purple-600/20 hover:bg-purple-600/30 border border-purple-500/30 text-purple-300 text-xs font-medium rounded-xl transition-all">🎵 Music</button>
         </div>
 
-        <!-- CHAT SCREEN WINDOW -->
+        <!-- CORE CHAT CORE DISPLAY WINDOW -->
         <div id="chat-card" class="flex-1 flex flex-col rounded-2xl sm:rounded-3xl bg-white/5 border border-white/10 backdrop-blur-xl shadow-2xl overflow-hidden transition-all duration-500">
             <div class="px-4 sm:px-6 py-3 border-b border-white/10 bg-white/5 flex items-center justify-between">
                 <div class="flex items-center gap-2.5 min-w-0">
@@ -106,36 +107,32 @@
                 </div>
                 <span id="user-profile-badge" class="text-white/40 font-mono text-[10px] sm:text-xs bg-white/5 px-2 py-0.5 rounded-lg border border-white/5 truncate max-w-[100px]">Mortal</span>
             </div>
-            
-            <!-- Chat Container Body -->
             <div id="chat-box" class="flex-1 p-4 sm:p-6 overflow-y-auto space-y-3 sm:space-y-4 text-xs sm:text-sm text-white/90">
-                <div id="bot-welcome-msg" class="bg-white/5 border border-white/5 p-3 rounded-2xl max-w-[85%] sm:max-w-[80%] self-start">Profile active. Enter a prompt to communicate.</div>
+                <div id="bot-welcome-msg" class="bg-white/5 border border-white/5 p-3 rounded-2xl max-w-[85%] sm:max-w-[80%] self-start">Workspace active. Enter a prompt to communicate.</div>
             </div>
-            
-            <!-- Message Input Tray -->
             <div class="p-3 sm:p-4 bg-white/5 border-t border-white/10 flex gap-2">
-                <input id="user-input" type="text" placeholder="Type a message..." class="flex-1 px-3 sm:px-4 py-2.5 sm:py-3 bg-white/5 border border-white/10 rounded-xl text-white outline-none focus:border-purple-500 text-xs sm:text-sm transition-colors placeholder-white/20">
+                <input id="user-input" type="text" placeholder="Type a message..." class="flex-1 px-3 sm:px-4 py-2.5 sm:py-3 bg-white/5 border border-white/10 rounded-xl text-white outline-none focus:border-purple-500 text-xs sm:text-sm transition-colors">
                 <button id="send-btn" onclick="sendMessage()" class="px-4 sm:px-5 py-2.5 sm:py-3 bg-purple-600 hover:bg-purple-500 text-white font-medium text-xs sm:text-sm rounded-xl transition-all shadow-lg shadow-purple-600/30">Send</button>
             </div>
         </div>
     </div>
 
-    <!-- PRANK PAYWALL MODAL Overlay -->
+    <!-- PRANK OVERLAY BLOCK DIALOG -->
     <div id="prank-modal" class="hidden absolute inset-0 bg-black/70 backdrop-blur-md flex items-center justify-center p-4 z-50">
         <div class="bg-slate-900/90 border border-white/10 p-6 sm:p-8 rounded-3xl max-w-sm w-full text-center shadow-2xl flex flex-col items-center">
             <div class="w-11 h-11 rounded-full bg-purple-500/20 text-purple-400 flex items-center justify-center text-xl font-bold mb-3">🔮</div>
             <h2 class="text-white text-lg sm:text-xl font-bold mb-1 tracking-wide">AAKASH VANI</h2>
-            <p class="text-white/60 text-xs mb-4">Free trial expired! Upgrade to premium or wager a challenge against the devil.</p>
+            <p class="text-white/60 text-xs mb-4">Free trial expired! Upgrade to premium or settle it with a challenge game.</p>
             <div class="w-40 h-40 bg-white p-2 rounded-2xl shadow-inner mb-4 flex items-center justify-center border-4 border-purple-500">
                 <img src="/static/qr.png" alt="UPI QR" class="w-full h-full object-contain rounded-xl">
             </div>
             <button onclick="startDevilGame()" class="w-full py-2 mb-1.5 bg-red-950/40 hover:bg-red-900/60 border border-red-800/50 text-red-400 text-xs font-semibold rounded-xl tracking-wide">Wager Game</button>
             <button onclick="startTicTacToeGame()" class="w-full py-2 mb-2 bg-red-950/40 hover:bg-red-900/60 border border-red-800/50 text-red-400 text-xs font-semibold rounded-xl tracking-wide">Cross & Zero</button>
-            <button onclick="bypassPrankLimit()" class="w-full py-1.5 text-white/20 hover:text-white/50 text-[10px] font-mono transition-all tracking-widest uppercase">sybau</button>
+            <button onclick="bypassPrankLimit()" class="w-full py-1.5 text-white/20 hover:text-white/50 text-[10px] font-mono transition-all uppercase">sybau</button>
         </div>
     </div>
 
-    <!-- GAME 1: MINI DEVIL GUESS GAME OVERLAY -->
+    <!-- GUESS GAME LAYOUT OVERLAY -->
     <div id="game-modal" class="hidden absolute inset-0 bg-black/95 backdrop-blur-lg flex items-center justify-center p-4 z-50">
         <div class="bg-red-950/20 border border-red-900/50 p-6 sm:p-8 rounded-3xl max-w-sm w-full text-center shadow-2xl flex flex-col items-center">
             <div class="text-2xl mb-1 animate-bounce">👹</div>
@@ -154,22 +151,22 @@
         </div>
     </div>
 
-    <!-- GAME 2: DEVIL'S TIC TAC TOE OVERLAY -->
+    <!-- TIC TAC TOE COMPONENT WINDOW -->
     <div id="ttt-modal" class="hidden absolute inset-0 bg-black/95 backdrop-blur-lg flex items-center justify-center p-4 z-50">
         <div class="bg-red-950/20 border border-red-900/50 p-5 rounded-3xl max-w-sm w-full text-center shadow-2xl flex flex-col items-center">
             <div class="text-2xl mb-1">❌👹⭕</div>
             <h2 class="text-red-500 text-base font-mono font-bold tracking-widest uppercase mb-3">CROSS & ZERO</h2>
             
             <div class="grid grid-cols-3 gap-2 w-56 h-56 sm:w-64 sm:h-64 mb-4">
-                <button data-index="0" onclick="makePlayerMove(0)" class="ttt-cell bg-black/60 border border-red-900/40 rounded-xl text-xl font-mono font-bold text-white hover:bg-red-950/30 transition-colors"></button>
-                <button data-index="1" onclick="makePlayerMove(1)" class="ttt-cell bg-black/60 border border-red-900/40 rounded-xl text-xl font-mono font-bold text-white hover:bg-red-950/30 transition-colors"></button>
-                <button data-index="2" onclick="makePlayerMove(2)" class="ttt-cell bg-black/60 border border-red-900/40 rounded-xl text-xl font-mono font-bold text-white hover:bg-red-950/30 transition-colors"></button>
-                <button data-index="3" onclick="makePlayerMove(3)" class="ttt-cell bg-black/60 border border-red-900/40 rounded-xl text-xl font-mono font-bold text-white hover:bg-red-950/30 transition-colors"></button>
-                <button data-index="4" onclick="makePlayerMove(4)" class="ttt-cell bg-black/60 border border-red-900/40 rounded-xl text-xl font-mono font-bold text-white hover:bg-red-950/30 transition-colors"></button>
-                <button data-index="5" onclick="makePlayerMove(5)" class="ttt-cell bg-black/60 border border-red-900/40 rounded-xl text-xl font-mono font-bold text-white hover:bg-red-950/30 transition-colors"></button>
-                <button data-index="6" onclick="makePlayerMove(6)" class="ttt-cell bg-black/60 border border-red-900/40 rounded-xl text-xl font-mono font-bold text-white hover:bg-red-950/30 transition-colors"></button>
-                <button data-index="7" onclick="makePlayerMove(7)" class="ttt-cell bg-black/60 border border-red-900/40 rounded-xl text-xl font-mono font-bold text-white hover:bg-red-950/30 transition-colors"></button>
-                <button data-index="8" onclick="makePlayerMove(8)" class="ttt-cell bg-black/60 border border-red-900/40 rounded-xl text-xl font-mono font-bold text-white hover:bg-red-950/30 transition-colors"></button>
+                <button data-index="0" onclick="makePlayerMove(0)" class="ttt-cell h-full w-full bg-black/60 border border-red-900/40 rounded-xl text-xl font-mono font-bold text-white hover:bg-red-950/30 transition-colors flex items-center justify-center"></button>
+                <button data-index="1" onclick="makePlayerMove(1)" class="ttt-cell h-full w-full bg-black/60 border border-red-900/40 rounded-xl text-xl font-mono font-bold text-white hover:bg-red-950/30 transition-colors flex items-center justify-center"></button>
+                <button data-index="2" onclick="makePlayerMove(2)" class="ttt-cell h-full w-full bg-black/60 border border-red-900/40 rounded-xl text-xl font-mono font-bold text-white hover:bg-red-950/30 transition-colors flex items-center justify-center"></button>
+                <button data-index="3" onclick="makePlayerMove(3)" class="ttt-cell h-full w-full bg-black/60 border border-red-900/40 rounded-xl text-xl font-mono font-bold text-white hover:bg-red-950/30 transition-colors flex items-center justify-center"></button>
+                <button data-index="4" onclick="makePlayerMove(4)" class="ttt-cell h-full w-full bg-black/60 border border-red-900/40 rounded-xl text-xl font-mono font-bold text-white hover:bg-red-950/30 transition-colors flex items-center justify-center"></button>
+                <button data-index="5" onclick="makePlayerMove(5)" class="ttt-cell h-full w-full bg-black/60 border border-red-900/40 rounded-xl text-xl font-mono font-bold text-white hover:bg-red-950/30 transition-colors flex items-center justify-center"></button>
+                <button data-index="6" onclick="makePlayerMove(6)" class="ttt-cell h-full w-full bg-black/60 border border-red-900/40 rounded-xl text-xl font-mono font-bold text-white hover:bg-red-950/30 transition-colors flex items-center justify-center"></button>
+                <button data-index="7" onclick="makePlayerMove(7)" class="ttt-cell h-full w-full bg-black/60 border border-red-900/40 rounded-xl text-xl font-mono font-bold text-white hover:bg-red-950/30 transition-colors flex items-center justify-center"></button>
+                <button data-index="8" onclick="makePlayerMove(8)" class="ttt-cell h-full w-full bg-black/60 border border-red-900/40 rounded-xl text-xl font-mono font-bold text-white hover:bg-red-950/30 transition-colors flex items-center justify-center"></button>
             </div>
             <p id="ttt-feedback" class="text-red-400 text-xs font-mono min-h-[16px]">Your Turn. You are X.</p>
         </div>
@@ -184,7 +181,6 @@
         const prankModal = document.getElementById('prank-modal');
         const gameModal = document.getElementById('game-modal');
         const tttModal = document.getElementById('ttt-modal');
-        const historyList = document.getElementById('history-list');
         const bgAudio = document.getElementById('bg-audio');
         const hellAudio = document.getElementById('hell-audio');
         const winAudio = document.getElementById('game-win-audio');
@@ -205,9 +201,10 @@
         let tttBoard = ["", "", "", "", "", "", "", "", ""], isTttActive = false;
 
         bgAudio.volume = 0.2; hellAudio.volume = 0.25; winAudio.volume = 0.5; loseAudio.volume = 0.6;
+        if(winStreakAudio) winStreakAudio.volume = 0.6; if(lossStreakAudio) lossStreakAudio.volume = 0.6;
 
         window.addEventListener('DOMContentLoaded', () => {
-            fetchLeaderboard(); // Automatically pull scores onto landing layout logic immediately
+            fetchLeaderboard(); 
             const curseEndTime = sessionStorage.getItem('curse_end_timestamp');
             const now = Date.now();
             if (curseEndTime && parseInt(curseEndTime) > now) {
@@ -218,7 +215,6 @@
             }
         });
 
-        // --- ACCOUNT PORTAL DATABASE INTERACTION ---
         async function handleDbAuth(actionType) {
             const username = document.getElementById('login-user').value.trim();
             const password = document.getElementById('login-pass').value.trim();
@@ -230,7 +226,6 @@
             
             activeUser = resData.username; 
             document.getElementById('user-profile-badge').innerText = activeUser;
-            localStorage.setItem('user_logged_in', 'true');
             launchApplicationWorkspace();
         }
 
@@ -241,19 +236,14 @@
         }
 
         function launchApplicationWorkspace() {
-            authScreen.classList.add('hidden'); 
-            mainApp.classList.remove('hidden'); 
-            bgAudio.play(); 
-            fetchLeaderboard();
+            authScreen.classList.add('hidden'); mainApp.classList.remove('hidden'); bgAudio.play(); fetchLeaderboard();
         }
 
-        // --- MULTIPLAYER LEADERBOARD DOM MANIPULATION ---
         async function fetchLeaderboard() {
             try {
                 const response = await fetch('/api/leaderboard');
                 const board = await response.json();
                 
-                // Populate both pre-login cards and running main workspace panels simultaneously
                 const authContainer = document.getElementById('auth-leaderboard-container');
                 const appContainer = document.getElementById('app-leaderboard-container');
                 
@@ -262,29 +252,21 @@
                     boardHtml += `<div class="flex justify-between items-center text-white/60 bg-white/5 p-1 px-2 rounded-lg border border-white/5"><span>${idx === 0 ? "👑 " : "💀 "}${player.username}</span><span class="text-green-400 font-bold">${player.streak}x</span></div>`;
                 });
                 
-                authContainer.innerHTML = boardHtml || "<div class='text-white/30 text-center py-2'>No souls recorded yet</div>";
-                appContainer.innerHTML = boardHtml || "<div class='text-white/30 text-center py-2'>No records</div>";
+                if (authContainer) authContainer.innerHTML = boardHtml || "<div class='text-white/30 text-center py-2'>No records recorded</div>";
+                if (appContainer) appContainer.innerHTML = boardHtml || "<div class='text-white/30 text-center py-2'>No records</div>";
             } catch (e) { console.error(e); }
         }
 
-        // --- MOBILE UI SIDEBAR TOGGLE ---
         function toggleMobileSidebar() {
             const wrapper = document.getElementById('sidebar-expanded-content');
             const actions = document.getElementById('sidebar-action-wrapper');
             const card = document.getElementById('sidebar-card');
-            
             if(wrapper.classList.contains('hidden')) {
-                wrapper.classList.remove('hidden');
-                actions.classList.remove('hidden');
-                actions.classList.add('grid');
-                card.classList.remove('max-h-[220px]');
-                card.classList.add('max-h-none');
+                wrapper.classList.remove('hidden'); actions.classList.remove('hidden'); actions.classList.add('grid');
+                card.classList.remove('max-h-[220px]'); card.classList.add('max-h-none');
             } else {
-                wrapper.classList.add('hidden');
-                actions.classList.remove('grid');
-                actions.classList.add('hidden');
-                card.classList.add('max-h-[220px]');
-                card.classList.remove('max-h-none');
+                wrapper.classList.add('hidden'); actions.classList.remove('grid'); actions.classList.add('hidden');
+                card.classList.add('max-h-[220px]'); card.classList.remove('max-h-none');
             }
         }
 
@@ -302,7 +284,7 @@
             if (outcome === 'win') {
                 let wStreak = parseInt(sessionStorage.getItem('w_streak') || "0") + 1;
                 sessionStorage.setItem('w_streak', wStreak.toString()); sessionStorage.removeItem('l_streak');
-                if (wStreak >= 2) { if(typeof winStreakAudio !== 'undefined') winStreakAudio.play(); } else winAudio.play();
+                if (wStreak >= 2 && winStreakAudio) winStreakAudio.play(); else winAudio.play();
                 
                 if(activeUser !== "Guest") {
                     await fetch('/api/leaderboard/update', { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({ username: activeUser, streak: wStreak }) });
@@ -312,7 +294,7 @@
             } else {
                 let lStreak = parseInt(sessionStorage.getItem('l_streak') || "0") + 1;
                 sessionStorage.setItem('l_streak', lStreak.toString()); sessionStorage.removeItem('w_streak'); sessionStorage.removeItem('dont_bother_granted');
-                if (lStreak >= 2) { if(typeof lossStreakAudio !== 'undefined') lossStreakAudio.play(); } else loseAudio.play();
+                if (lStreak >= 2 && lossStreakAudio) lossStreakAudio.play(); else loseAudio.play();
                 let finalTimeInSeconds = 9 * lStreak;
                 sessionStorage.setItem('curse_end_timestamp', (Date.now() + (finalTimeInSeconds * 1000)).toString());
                 applyCursedState(); startCurseCountdown(finalTimeInSeconds);
@@ -329,6 +311,7 @@
             document.getElementById('game-feedback').innerText = userGuess < secretNumber ? "Too low. Flames rise." : "Too high. Soul drifts.";
         }
 
+        // --- DEVIL CROSS & ZERO CORE FUNCTIONALITY ---
         function startTicTacToeGame() {
             if (sessionStorage.getItem('curse_end_timestamp')) return;
             bgAudio.pause(); hellAudio.play();
@@ -340,7 +323,7 @@
 
         function makePlayerMove(index) {
             if (!isTttActive || tttBoard[index] !== "") return;
-            tttBoard[index] = "X"; document.querySelector(`[data-index='${index}']`).innerText = "X";
+            tttBoard[index] = "X"; document.querySelectorAll('.ttt-cell')[index].innerText = "X";
             if (checkTttWinner("X")) { endTtt('win'); return; }
             if (!tttBoard.includes("")) { endTtt('draw'); return; }
             document.getElementById('ttt-feedback').innerText = "Devil calculating...";
@@ -356,7 +339,7 @@
                     if (score > bestScore) { bestScore = score; move = i; }
                 }
             }
-            tttBoard[move] = "O"; document.querySelector(`[data-index='${move}']`).innerText = "O";
+            tttBoard[move] = "O"; document.querySelectorAll('.ttt-cell')[move].innerText = "O";
             if (checkTttWinner("O")) { endTtt('loss'); return; }
             if (!tttBoard.includes("")) { endTtt('draw'); return; }
             document.getElementById('ttt-feedback').innerText = "Your turn.";
@@ -386,11 +369,10 @@
             return winPatterns.some(pattern => pattern.every(idx => tttBoard[idx] === p));
         }
 
-        // Tic Tac Toe Resolution Mapping
         function endTtt(result) {
             isTttActive = false; tttModal.classList.add('hidden'); hellAudio.pause();
             if (result === 'win') handleGameResolution('win');
-            else if (result === 'draw') { bgAudio.play(); revertToNormalStyles(); alert("👹: 'A draw? Resilience noted mortal. You bypass execution.'"); }
+            else if (result === 'draw') { bgAudio.play(); revertToNormalStyles(); alert("👹: 'A draw? Impressive resilience mortal.'"); }
             else handleGameResolution('loss');
         }
 
@@ -411,7 +393,6 @@
             sendBtn.className = "px-5 py-3 bg-red-950 border border-red-900 text-red-800/40 font-mono text-xs sm:text-sm cursor-not-allowed";
         }
 
-        // Return components back into primary CSS styling rulesets
         function revertToNormalStyles() {
             bodyBg.className = "theme-blue h-screen w-screen flex flex-col items-center justify-center p-2 sm:p-4 relative overflow-hidden";
             headerTitle.innerText = "Aadhunik Manushya"; headerTitle.className = "text-white font-medium text-sm sm:text-base tracking-wide";
@@ -419,11 +400,6 @@
             userInput.placeholder = "Type a message..."; userInput.className = "flex-1 px-3 sm:px-4 py-2.5 sm:py-3 bg-white/5 border border-white/10 rounded-xl text-white outline-none focus:border-purple-500 text-xs sm:text-sm";
             sendBtn.className = "px-4 sm:px-5 py-2.5 sm:py-3 bg-purple-600 hover:bg-purple-500 text-white font-medium text-xs sm:text-sm rounded-xl transition-all shadow-lg shadow-purple-600/30";
             messageCount = 0;
-        }
-
-        function toggleMusic() {
-            if (sessionStorage.getItem('curse_end_timestamp')) return;
-            if (bgAudio.paused) { bgAudio.play(); musicBtn.innerText = "🎵 Pause"; } else { bgAudio.pause(); musicBtn.innerText = "🔇 Play"; }
         }
 
         function startNewChat() {
