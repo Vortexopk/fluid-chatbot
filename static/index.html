@@ -41,6 +41,8 @@
     <audio id="hell-audio" loop src="/static/hell-music.mp3"></audio>
     <audio id="game-win-audio" src="/static/win.mp3"></audio>
     <audio id="game-lose-audio" src="/static/lose.mp3"></audio>
+    <audio id="win-streak-audio" src="/static/win-streak.mp3"></audio>
+    <audio id="loss-streak-audio" src="/static/loss-streak.mp3"></audio>
 
     <!-- INITIAL ENTRY PORTAL -->
     <div id="auth-screen" class="w-full max-w-sm p-8 rounded-3xl bg-white/5 border border-white/10 backdrop-blur-xl shadow-2xl flex flex-col items-center z-40">
@@ -111,6 +113,10 @@
             <h2 class="text-red-500 text-xl font-mono font-bold tracking-widest uppercase mb-2">DEVIL'S WAGER</h2>
             <p id="game-instruction" class="text-white/70 text-xs font-mono mb-6">I am thinking of a number from <strong class="text-red-400">1 to 10</strong>. Guess correctly to break the loop. Fail, and meet your curse.</p>
             
+            <div class="w-full flex justify-between px-2 text-xs font-mono mb-4">
+                <span class="text-green-400">🔥 Win Streak: <span id="ui-win-streak">0x</span></span>
+                <span class="text-red-400">💀 Loss Streak: <span id="ui-loss-streak">0x</span></span>
+            </div>
             <div class="text-red-400 text-sm font-mono mb-4">🖤 Lives Left: <span id="game-lives" class="font-bold text-red-500">3</span></div>
             
             <div class="w-full flex gap-2 mb-4">
@@ -137,6 +143,8 @@
         const hellAudio = document.getElementById('hell-audio');
         const winAudio = document.getElementById('game-win-audio');
         const loseAudio = document.getElementById('game-lose-audio');
+        const winStreakAudio = document.getElementById('win-streak-audio');
+        const lossStreakAudio = document.getElementById('loss-streak-audio');
         const musicBtn = document.getElementById('music-btn');
         const bodyBg = document.getElementById('body-bg');
         const sidebarCard = document.getElementById('sidebar-card');
@@ -149,24 +157,30 @@
 
         let secretNumber = 0;
         let livesLeft = 3;
+        let curseTimerInterval = null;
 
         bgAudio.volume = 0.2;
         prankAudio.volume = 0.6;
         hellAudio.volume = 0.25;
         winAudio.volume = 0.5;
         loseAudio.volume = 0.6;
+        winStreakAudio.volume = 0.6;
+        lossStreakAudio.volume = 0.6;
 
         window.addEventListener('DOMContentLoaded', () => {
             const isRemembered = localStorage.getItem('user_logged_in');
-            const isPermanentlyCursed = localStorage.getItem('cursed_profile_status');
+            const curseEndTime = sessionStorage.getItem('curse_end_timestamp');
+            const now = Date.now();
 
             if (isRemembered === 'true') {
                 authScreen.classList.add('hidden');
                 mainApp.classList.remove('hidden');
                 
                 window.addEventListener('click', () => { 
-                    if (isPermanentlyCursed === 'true') {
+                    if (curseEndTime && parseInt(curseEndTime) > now) {
+                        const remainingSeconds = Math.ceil((parseInt(curseEndTime) - now) / 1000);
                         applyCursedState();
+                        startCurseCountdown(remainingSeconds);
                     } else {
                         bgAudio.play();
                     }
@@ -189,8 +203,13 @@
             authScreen.classList.add('hidden');
             mainApp.classList.remove('hidden');
             
-            if (localStorage.getItem('cursed_profile_status') === 'true') {
+            const curseEndTime = sessionStorage.getItem('curse_end_timestamp');
+            const now = Date.now();
+
+            if (curseEndTime && parseInt(curseEndTime) > now) {
+                const remainingSeconds = Math.ceil((parseInt(curseEndTime) - now) / 1000);
                 applyCursedState();
+                startCurseCountdown(remainingSeconds);
             } else {
                 bgAudio.play();
             }
@@ -199,7 +218,6 @@
         function startDevilGame() {
             prankAudio.pause();
             bgAudio.pause();
-            
             hellAudio.play();
 
             secretNumber = Math.floor(Math.random() * 10) + 1;
@@ -207,6 +225,10 @@
             document.getElementById('game-lives').innerText = livesLeft;
             document.getElementById('game-feedback').innerText = "";
             document.getElementById('game-guess').value = "";
+
+            // Sync visual streak flags onto the game UI overlay
+            document.getElementById('ui-win-streak').innerText = (sessionStorage.getItem('w_streak') || "0") + "x";
+            document.getElementById('ui-loss-streak').innerText = (sessionStorage.getItem('l_streak') || "0") + "x";
 
             prankModal.classList.add('hidden');
             gameModal.classList.remove('hidden');
@@ -223,16 +245,28 @@
             }
 
             if (userGuess === secretNumber) {
-                // USER WINS
+                // --- USER WINS THE GAME INTERACTION ---
                 gameModal.classList.add('hidden');
                 hellAudio.pause();
-                
-                // Play win soundtrack, then resume normal ambient background track
-                winAudio.play();
+
+                // Increment Winning Streaks
+                let wStreak = parseInt(sessionStorage.getItem('w_streak') || "0") + 1;
+                sessionStorage.setItem('w_streak', wStreak.toString());
+                sessionStorage.removeItem('l_streak'); // Break losing sequence tracking data
+
+                // Play custom win streak cue
+                if (wStreak >= 2) {
+                    winStreakAudio.play();
+                } else {
+                    winAudio.play();
+                }
+
                 bgAudio.play();
-                
+                sessionStorage.setItem('dont_bother_granted', 'true');
                 revertToNormalStyles();
-                alert("👹: 'Fine, mortal... your curse is lifted! For now...'");
+
+                // Ragebait Notification alert dispatch layout 
+                alert(`👹: "you won bcz i let you win. (Win Streak: ${wStreak}x)"`);
                 return;
             }
 
@@ -240,15 +274,34 @@
             document.getElementById('game-lives').innerText = livesLeft;
 
             if (livesLeft <= 0) {
-                // USER LOSES
+                // --- USER LOSES THE GAME INTERACTION ---
                 gameModal.classList.add('hidden');
                 hellAudio.pause();
-                
-                // Play the custom game lose soundtrack!
-                loseAudio.play();
-                
-                localStorage.setItem('cursed_profile_status', 'true');
+
+                // Increment Losing Streaks
+                let lStreak = parseInt(sessionStorage.getItem('l_streak') || "0") + 1;
+                sessionStorage.setItem('l_streak', lStreak.toString());
+                sessionStorage.removeItem('w_streak'); // Break winning session sequences
+
+                if (lStreak >= 2) {
+                    lossStreakAudio.play();
+                } else {
+                    loseAudio.play();
+                }
+
+                // Progressive scaling calculation loop parameters
+                const initialCurseSeconds = 9;
+                let finalTimeInSeconds = initialCurseSeconds * lStreak;
+
+                // Lock timestamp onto sessionStorage mapping data schemas
+                const expiryTime = Date.now() + (finalTimeInSeconds * 1000);
+                sessionStorage.setItem('curse_end_timestamp', expiryTime.toString());
+
                 applyCursedState();
+                startCurseCountdown(finalTimeInSeconds);
+
+                // Corny loss alert mock messaging logic
+                alert(`👹: "playing with the devil was a great choice. (Loss Streak: ${lStreak}x)"`);
                 return;
             }
 
@@ -260,24 +313,46 @@
             guessInput.value = "";
         }
 
+        function startCurseCountdown(durationInSeconds) {
+            if (curseTimerInterval) clearInterval(curseTimerInterval);
+
+            let timeLeft = durationInSeconds;
+
+            function updateTimerDisplay() {
+                userInput.placeholder = `CURSED TO SILENCE (${timeLeft}s)`;
+            }
+
+            updateTimerDisplay();
+
+            curseTimerInterval = setInterval(() => {
+                timeLeft--;
+                if (timeLeft <= 0) {
+                    clearInterval(curseTimerInterval);
+                    sessionStorage.removeItem('curse_end_timestamp');
+                    revertToNormalStyles();
+                    bgAudio.play();
+                } else {
+                    updateTimerDisplay();
+                }
+            }, 1000);
+        }
+
         function applyCursedState() {
             bodyBg.className = "theme-red h-screen w-screen flex flex-col items-center justify-center p-4 relative overflow-hidden curse-shake";
-            
             sidebarCard.className = "w-64 flex flex-col rounded-3xl bg-black/80 border border-red-700/80 backdrop-blur-3xl p-4 overflow-hidden shadow-[0_0_30px_rgba(220,38,38,0.2)]";
             chatCard.className = "flex-1 flex flex-col rounded-3xl bg-black/80 border border-red-700/80 backdrop-blur-3xl overflow-hidden shadow-[0_0_50px_rgba(220,38,38,0.3)]";
             
             headerPulse.className = "w-3 h-3 rounded-full bg-red-600 animate-ping";
-            headerTitle.innerText = "☠️ YOU ARE CURSED ☠️";
+            headerTitle.innerText = "☠️ SYSTEM CURSED ☠️";
             headerTitle.className = "text-red-600 font-mono tracking-widest uppercase font-extrabold text-center w-full animate-pulse";
             
             userInput.disabled = true;
             sendBtn.disabled = true;
-            userInput.className = "flex-1 px-4 py-3 bg-black/60 border border-red-900/80 rounded-xl text-red-700/40 text-center font-mono outline-none";
-            userInput.placeholder = "YOU ARE CURSED TO SILENCE";
+            userInput.className = "flex-1 px-4 py-3 bg-black/60 border border-red-900/80 rounded-xl text-red-500 text-center font-mono outline-none";
             sendBtn.className = "px-5 py-3 bg-red-950 border border-red-900 text-red-800/40 font-mono rounded-xl cursor-not-allowed";
             
             document.getElementById('bot-welcome-msg').innerText = "💀 THE DEVIL ENJOYS YOUR SILENCE. REFRESHING WON'T SAVE YOU.";
-            musicBtn.innerText = "🔇 MUSIC SILENCED BY CURSE";
+            musicBtn.innerText = "🔇 LOCKED BY CURSE";
             musicBtn.disabled = true;
             musicBtn.className = "w-full mt-4 py-2 bg-black text-red-900/40 text-xs font-mono rounded-xl border border-red-950 cursor-not-allowed";
         }
@@ -297,12 +372,15 @@
             sendBtn.className = "px-5 py-3 bg-purple-600 hover:bg-purple-500 text-white font-medium rounded-xl transition-all shadow-lg shadow-purple-600/30";
             
             messageCount = 0;
+            musicBtn.disabled = false;
             musicBtn.innerText = "🎵 Pause Music";
             musicBtn.className = "w-full mt-4 py-2 bg-purple-600/20 hover:bg-purple-600/30 border border-purple-500/30 text-purple-300 text-xs font-medium rounded-xl transition-all flex items-center justify-center gap-2";
+            
+            document.getElementById('bot-welcome-msg').innerText = "Hello! Enter a prompt below to communicate with the model.";
         }
 
         function toggleMusic() {
-            if (localStorage.getItem('cursed_profile_status') === 'true') return;
+            if (sessionStorage.getItem('curse_end_timestamp')) return;
             if (bgAudio.paused) {
                 bgAudio.play();
                 musicBtn.innerText = "🎵 Pause Music";
@@ -313,12 +391,12 @@
         }
 
         function startNewChat() {
-            if (localStorage.getItem('cursed_profile_status') === 'true') return;
+            if (sessionStorage.getItem('curse_end_timestamp')) return;
             chatBox.innerHTML = `<div class="bg-white/5 border border-white/5 p-3 rounded-2xl max-w-[80%] self-start">Hello! Enter a prompt below to communicate with the model.</div>`;
         }
 
         async function sendMessage() {
-            if (localStorage.getItem('cursed_profile_status') === 'true') return;
+            if (sessionStorage.getItem('curse_end_timestamp')) return;
             const text = userInput.value.trim();
             if (!text) return;
 
@@ -331,7 +409,9 @@
             userInput.value = '';
             chatBox.scrollTop = chatBox.scrollHeight;
 
-            if (messageCount >= MAX_FREE_MESSAGES) {
+            if (sessionStorage.getItem('dont_bother_granted') === 'true') {
+                // Unlimited message path unlocked for this session block
+            } else if (messageCount >= MAX_FREE_MESSAGES) {
                 userInput.disabled = true;
                 sendBtn.disabled = true;
                 userInput.placeholder = "Subscription required...";
@@ -363,7 +443,7 @@
         }
 
         function bypassPrankLimit() {
-            if (localStorage.getItem('cursed_profile_status') === 'true') return;
+            if (sessionStorage.getItem('curse_end_timestamp')) return;
             messageCount = 0;
             userInput.disabled = false;
             sendBtn.disabled = false;
